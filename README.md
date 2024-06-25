@@ -1,2 +1,37 @@
 # LandingONG
  
+For instalation of the packages run the command: ```npm install```
+
+Because the google authentification is on, the user should go on the https://console.cloud.google.com. Create an account and folow the next steps 
+Create a New Project in Google Cloud Console:
+
+Go to the Google Cloud Console.
+Sign in with your Google account.
+Click on the project drop-down at the top of the page and select "New Project."
+Name your project and click "Create."
+Enable Google APIs:
+
+With your project selected, navigate to the API & Services dashboard.
+Click "Enable APIs and Services."
+Search for "Google Identity Toolkit API" or "Google OAuth API" and enable it.
+Create OAuth 2.0 Credentials:
+
+Go to the Credentials page.
+Click "Create Credentials" and select "OAuth 2.0 Client IDs."
+You may be prompted to configure the OAuth consent screen first. If so, follow the steps to set up your consent screen:
+Provide the necessary information, including application name and email address.
+Add scopes that your application will use (like email, profile).
+Add test users if the app is still in development.
+Once the consent screen is configured, proceed to create the OAuth 2.0 Client ID:
+Choose "Web application" as the application type.
+Add the authorized redirect URIs (e.g., http://localhost:3000 if you're developing locally).
+Click "Create."
+Retrieve Client ID:
+
+
+Client_ID should be saved in an .env file
+
+After creating the credentials, you will see a client ID and a client secret. Copy the client ID.
+You can always find your client ID later by returning to the Credentials page and selecting your OAuth 2.0 Client ID.
+
+To run the project ```npm start```
