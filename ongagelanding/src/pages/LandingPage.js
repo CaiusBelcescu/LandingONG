@@ -1,7 +1,7 @@
-// src/LandingPage.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 const Container = styled.div`
   display: flex;
@@ -115,21 +115,22 @@ const SubmitButton = styled.button`
   }
 `;
 
-// const GoogleButton = styled(GoogleLogin)`
-//   padding: 0.75rem;
-//   border: none;
-//   border-radius: 4px;
-//   background-color: #db4437;
-//   color: #fff;
-//   font-size: 1rem;
-//   cursor: pointer;
-//   width: 100%;
-//   max-width: 300px;
+const GoogleButton = styled.button`
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #db4437;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 1rem;
 
-//   @media (max-width: 768px) {
-//     max-width: 100%;
-//   }
-// `;
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
 
 const Logo = styled.img`
   max-width: 80%;
@@ -141,13 +142,33 @@ const Logo = styled.img`
 `;
 
 const LandingPage = () => {
-  const handleGoogleSuccess = (response) => {
-    console.log('Google login successful:', response);
-    // Handle your logic here (e.g., send token to backend)
-  };
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
 
-  const handleGoogleFailure = (response) => {
-    console.error('Google login failed:', response);
+  const login = useGoogleLogin({
+    onSuccess: (tokenResponse) => setUser(tokenResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
+
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+            Accept: 'application/json'
+          }
+        })
+        .then((res) => {
+          setProfile(res.data);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [user]);
+
+  const logOut = () => {
+    googleLogout();
+    setProfile(null);
   };
 
   return (
@@ -164,10 +185,20 @@ const LandingPage = () => {
             <Input type="text" placeholder="State" required />
             <Input type="text" placeholder="Zipcode" required />
             <Input type="email" placeholder="Email" required pattern="[a-zA-Z0-9._%+-]+@gmail\.com" />
-
             <SubmitButton type="submit">Register</SubmitButton>
           </Form>
-          
+          {profile ? (
+            <div>
+              <img src={profile.picture} alt="user" />
+              <h3>User Logged in</h3>
+              <p>Name: {profile.name}</p>
+              <p>Email Address: {profile.email}</p>
+              <br />
+              <GoogleButton onClick={logOut}>Log out</GoogleButton>
+            </div>
+          ) : (
+            <GoogleButton onClick={login}>Sign in with Google 🚀</GoogleButton>
+          )}
         </LeftSection>
         <RightSection>
           <Logo src="https://via.placeholder.com/300" alt="Logo" />
