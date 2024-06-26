@@ -231,7 +231,7 @@ const LandingPage = () => {
       });
       console.log('Campaigner User created:', campaignerResponse.data);
   
-      // window.location.href = 'https://jobswish.com/';
+      window.location.href = 'https://jobswish.com/';
     } catch (error) {
       console.error('Error creating user:', error);
     }
