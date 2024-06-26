@@ -1,4 +1,6 @@
+// src/pages/LandingPage.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
@@ -144,6 +146,16 @@ const Logo = styled.img`
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    jobTitle: '',
+    state: '',
+    zipcode: '',
+    email: '',
+    country: ''
+  });
+
+  const navigate = useNavigate();
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => setUser(tokenResponse),
@@ -161,14 +173,83 @@ const LandingPage = () => {
         })
         .then((res) => {
           setProfile(res.data);
+          setFormData({
+            ...formData,
+            name: res.data.name,
+            email: res.data.email
+          });
         })
         .catch((err) => console.log(err));
     }
   }, [user]);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const ongageData = {
+      email: formData.email,
+      overwrite: true,
+      fields: {
+        first_name: formData.name,
+        country: formData.country,
+        state: formData.state,
+        zip: formData.zipcode,
+        keyword: formData.jobTitle
+      }
+    };
+    const campaignerData = {
+      EmailAddress: formData.email,
+      CustomFields: [
+        { FieldName: 'city', Value: formData.country },
+        { FieldName: 'state', Value: formData.state },
+        { FieldName: 'keyword', Value: formData.jobTitle }
+      ]
+    };
+    try {
+      const ongageResponse = await axios.post('https://api.ongage.net/167360/api/v2/contacts/', ongageData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x_account_code': process.env.REACT_APP_ACCOUNTCODE,
+          'x_username': process.env.REACT_APP_USERNAME,
+          'x_password': process.env.REACT_APP_PASSWORD
+        }
+      });
+      console.log('Ongage User created:', ongageResponse.data);
+  
+      const campaignerResponse = await axios.post('http://localhost:5000/api/https://edapi.campaigner.com/v1/Subscribers', campaignerData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ApiKey': 'c524b1ae-e230-4062-9e6f-45f80eb045cc' 
+        }
+      });
+      console.log('Campaigner User created:', campaignerResponse.data);
+  
+      // window.location.href = 'https://jobswish.com/';
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+    console.log('New User:', ongageData, campaignerData);
+  };
+  
+
   const logOut = () => {
     googleLogout();
     setProfile(null);
+    setFormData({
+      name: '',
+      jobTitle: '',
+      state: '',
+      zipcode: '',
+      email: '',
+      country: ''
+    });
   };
 
   return (
@@ -179,17 +260,61 @@ const LandingPage = () => {
           <Subtitle>
             Looking for your dream job? Search for job openings based on your preferred role and location with Jobs Wish, the go-to platform for finding the perfect career opportunity.
           </Subtitle>
-          <Form>
-            <Input type="text" placeholder="Name" required />
-            <Input type="text" placeholder="Job Title" required />
-            <Input type="text" placeholder="State" required />
-            <Input type="text" placeholder="Zipcode" required />
-            <Input type="email" placeholder="Email" required pattern="[a-zA-Z0-9._%+-]+@gmail\.com" />
+          <Form onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
+            <Input
+              type="text"
+              name="jobTitle"
+              placeholder="Job Title"
+              value={formData.jobTitle}
+              onChange={handleInputChange}
+              required
+            />
+            <Input
+              type="text"
+              name="state"
+              placeholder="State"
+              value={formData.state}
+              onChange={handleInputChange}
+              required
+            />
+            <Input
+              type="text"
+              name="zipcode"
+              placeholder="Zipcode"
+              value={formData.zipcode}
+              onChange={handleInputChange}
+              required
+            />
+            <Input
+              type="text"
+              name="country"
+              placeholder="Country"
+              value={formData.country}
+              onChange={handleInputChange}
+              required
+            />
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              pattern="[a-zA-Z0-9._%+-]+@gmail\.com"
+            />
             <SubmitButton type="submit">Register</SubmitButton>
           </Form>
           {profile ? (
             <div>
-              <img src={profile.picture} alt="user" />
+              <img src={profile.picture} alt="user" style={{marginTop:"10px"}}/>
               <h3>User Logged in</h3>
               <p>Name: {profile.name}</p>
               <p>Email Address: {profile.email}</p>
