@@ -29,9 +29,20 @@ Click "Create."
 Retrieve Client ID:
 
 
-Client_ID should be saved in an .env file
+Client_ID should be saved in an .env.local
 
 After creating the credentials, you will see a client ID and a client secret. Copy the client ID.
 You can always find your client ID later by returning to the Credentials page and selecting your OAuth 2.0 Client ID.
 
 To run the project ```npm start```
+
+
+On the API part an env .env.local file is neded with :
+```REACT_APP_APIKEY=
+REACT_APP_ACCOUNTCODE=
+REACT_APP_USERNAME=
+REACT_APP_PASSWORD="
+```
+
+To install all dependencies run ```npm install```
+Run API with ```npm run dev```
