@@ -1,15 +1,15 @@
-// src/pages/LandingPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 16vh); /* Adjust based on your navbar and footer height */
   padding: 1rem;
   background-color: #f0f0f0;
   box-sizing: border-box;
@@ -57,6 +57,10 @@ const RightSection = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #333;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Title = styled.h1`
@@ -101,6 +105,26 @@ const Input = styled.input`
   }
 `;
 
+const LineContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px; /* Adjust height as needed */
+`;
+
+const HorizontalLine = styled.div`
+    flex-grow: 1;
+    height: 1px;
+    background-color: #000;
+    margin: 0 10px;
+`;
+
+const Text = styled.span`
+    font-size: 16px; /* Adjust font size as needed */
+    color: #333;
+    white-space: nowrap; /* Prevent text from wrapping */
+`;
+
 const SubmitButton = styled.button`
   padding: 0.75rem;
   border: none;
@@ -135,12 +159,41 @@ const GoogleButton = styled.button`
 `;
 
 const Logo = styled.img`
-  max-width: 80%;
-  height: auto;
+  max-width: 100%;
+  height: 100%;
 
   @media (max-width: 768px) {
     max-width: 50%;
   }
+`;
+const WrapperButtonsDown = styled.div`
+  width: 100%;
+  max-width: 300px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
+const InputDown = styled.input`
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+`;
+
+const SubmitButtonDown = styled.button`
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
 `;
 
 const LandingPage = () => {
@@ -148,15 +201,13 @@ const LandingPage = () => {
   const [profile, setProfile] = useState(null);
   const accountCode = process.env.REACT_APP_ACCOUNTCODE;
   const username = process.env.REACT_APP_USERNAME;
-  const password =process.env.REACT_APP_PASSWORD;
-  const apiKey= process.env.APIKEY
+  const password = process.env.REACT_APP_PASSWORD;
+  const apiKey = process.env.REACT_APP_APIKEY;
   const [formData, setFormData] = useState({
     name: '',
     jobTitle: '',
-    state: '',
     zipcode: '',
-    email: '',
-    country: ''
+    email: ''
   });
 
   const navigate = useNavigate();
@@ -187,6 +238,13 @@ const LandingPage = () => {
     }
   }, [user]);
 
+  const handleInputEmail = (e) => {
+    setFormData({
+      ...formData,
+      email: e.target.value
+    });
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -195,50 +253,46 @@ const LandingPage = () => {
     });
   };
 
+  const handleContinue = () => {
+    setProfile(formData.email)
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const ongageData = {
       email: formData.email,
       overwrite: true,
       fields: {
         first_name: formData.name,
-        country: formData.country,
-        state: formData.state,
         zip: formData.zipcode,
         keyword: formData.jobTitle
       }
     };
+  
     const campaignerData = {
       EmailAddress: formData.email,
       CustomFields: [
-        { FieldName: 'city', Value: formData.country },
-        { FieldName: 'state', Value: formData.state },
         { FieldName: 'keyword', Value: formData.jobTitle }
       ]
     };
+  
     try {
-      const ongageResponse = await axios.post('https://api.ongage.net/167360/api/v2/contacts/', ongageData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x_account_code': accountCode,
-          'x_username':username,
-          'x_password': password
-        }
-      });
+      // Call the Ongage API through your server endpoint
+      const ongageResponse = await axios.post('http://localhost:5000/api/ongage', ongageData);
       console.log('Ongage User created:', ongageResponse.data);
   
-      const campaignerResponse = await axios.post('http://localhost:5000/api/https://edapi.campaigner.com/v1/Subscribers', campaignerData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'ApiKey': apiKey
-        }
-      });
+      // Call the Campaigner API through your server endpoint
+      const campaignerResponse = await axios.post('http://localhost:5000/api/campaigner', campaignerData);
       console.log('Campaigner User created:', campaignerResponse.data);
-  
-      window.location.href = 'https://jobswish.com/';
+      
+      // Log out and redirect
+      logOut();
+      window.location.href = `https://jobswish.com/?q=${formData.jobTitle}&l=${formData.zipcode}`;
     } catch (error) {
       console.error('Error creating user:', error);
     }
+    
     console.log('New User:', ongageData, campaignerData);
   };
   
@@ -260,77 +314,76 @@ const LandingPage = () => {
     <Container>
       <Wrapper>
         <LeftSection>
-          <Title>Find your wish job with Jobs Wish!</Title>
+          <Title>Get job alerts straight to your inbox! Subscribe now!</Title>
           <Subtitle>
-            Looking for your dream job? Search for job openings based on your preferred role and location with Jobs Wish, the go-to platform for finding the perfect career opportunity.
+            Looking for your dream job? <p> Search for job openings based on your preferred role and location.</p>
           </Subtitle>
-          <Form onSubmit={handleSubmit}>
-            <Input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
-            <Input
-              type="text"
-              name="jobTitle"
-              placeholder="Job Title"
-              value={formData.jobTitle}
-              onChange={handleInputChange}
-              required
-            />
-            <Input
-              type="text"
-              name="state"
-              placeholder="State"
-              value={formData.state}
-              onChange={handleInputChange}
-              required
-            />
-            <Input
-              type="text"
-              name="zipcode"
-              placeholder="Zipcode"
-              value={formData.zipcode}
-              onChange={handleInputChange}
-              required
-            />
-            <Input
-              type="text"
-              name="country"
-              placeholder="Country"
-              value={formData.country}
-              onChange={handleInputChange}
-              required
-            />
-            <Input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              pattern="[a-zA-Z0-9._%+-]+@gmail\.com"
-            />
-            <SubmitButton type="submit">Register</SubmitButton>
-          </Form>
           {profile ? (
-            <div>
-              <img src={profile.picture} alt="user" style={{marginTop:"10px"}}/>
-              <h3>User Logged in</h3>
-              <p>Name: {profile.name}</p>
-              <p>Email Address: {profile.email}</p>
-              <br />
-              <GoogleButton onClick={logOut}>Log out</GoogleButton>
-            </div>
+            <>
+              <Form onSubmit={handleSubmit}>
+                <Input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+                <Input
+                  type="text"
+                  name="jobTitle"
+                  placeholder="Job Title"
+                  value={formData.jobTitle}
+                  onChange={handleInputChange}
+                  required
+                />
+
+                <Input
+                  type="text"
+                  name="zipcode"
+                  placeholder="Zipcode"
+                  value={formData.zipcode}
+                  onChange={handleInputChange}
+                  required
+                />
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  readOnly
+                />
+                <SubmitButton type="submit">Register</SubmitButton>
+              </Form>
+            </>
           ) : (
-            <GoogleButton onClick={login}>Sign in with Google 🚀</GoogleButton>
+            <>
+              <GoogleButton onClick={login}>Sign in with Google 🚀</GoogleButton>
+              <LineContainer>
+                <HorizontalLine />
+                <Text>OR</Text>
+                <HorizontalLine />
+              </LineContainer>
+              <WrapperButtonsDown>
+                <Form onSubmit={handleContinue}>
+                  <InputDown
+                    type="text"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleInputEmail}
+                    required
+                  />
+                  <SubmitButtonDown type="submit" >Continue</SubmitButtonDown>
+                </Form>
+              </WrapperButtonsDown>
+            </>
           )}
         </LeftSection>
         <RightSection>
-          <Logo src="https://via.placeholder.com/300" alt="Logo" />
+          <Logo src="https://welcome.jobswish.com/img/pexels-alessio-cesario-1906879.5d688f25.jpg" alt="Logo" />
         </RightSection>
       </Wrapper>
     </Container>

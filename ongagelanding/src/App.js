@@ -4,11 +4,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
+import Footer from './components/Footer';
 import './App.css';
 
 function App() {
   const clientID=process.env.REACT_APP_CLIENT_ID
-  console.log(clientID)
   return (
     <GoogleOAuthProvider clientId={clientID}>
       <div className="App">
@@ -18,6 +18,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
           </Routes>
         </Router>
+        <Footer/>
       </div>
     </GoogleOAuthProvider>
   );
