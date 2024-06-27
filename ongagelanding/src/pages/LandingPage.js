@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
@@ -199,10 +198,6 @@ const SubmitButtonDown = styled.button`
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const accountCode = process.env.REACT_APP_ACCOUNTCODE;
-  const username = process.env.REACT_APP_USERNAME;
-  const password = process.env.REACT_APP_PASSWORD;
-  const apiKey = process.env.REACT_APP_APIKEY;
   const [formData, setFormData] = useState({
     name: '',
     jobTitle: '',
@@ -210,7 +205,6 @@ const LandingPage = () => {
     email: ''
   });
 
-  const navigate = useNavigate();
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => setUser(tokenResponse),
@@ -279,12 +273,36 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await axios.post('http://localhost:5000/api/ongage', ongageData);
-      console.log('Ongage User created:', ongageResponse.data);
+      const ongageResponse = await fetch('http://localhost:5000/api/ongage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(ongageData)
+      });
+      
+      if (!ongageResponse.ok) {
+        throw new Error('Failed to create Ongage user');
+      }
+
+      const ongageResult = await ongageResponse.json();
+      console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await axios.post('http://localhost:5000/api/campaigner', campaignerData);
-      console.log('Campaigner User created:', campaignerResponse.data);
+      const campaignerResponse = await fetch('http://localhost:5000/api/campaigner', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(campaignerData)
+      });
+
+      if (!campaignerResponse.ok) {
+        throw new Error('Failed to create Campaigner user');
+      }
+      
+      const campaignerResult = await campaignerResponse.json();
+      console.log('Campaigner User created:', campaignerResult);
       
       // Log out and redirect
       logOut();
@@ -295,6 +313,8 @@ const LandingPage = () => {
     
     console.log('New User:', ongageData, campaignerData);
   };
+
+
   
 
   const logOut = () => {
