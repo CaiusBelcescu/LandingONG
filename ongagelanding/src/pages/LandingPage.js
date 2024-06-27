@@ -146,6 +146,10 @@ const Logo = styled.img`
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const accountCode = process.env.REACT_APP_ACCOUNTCODE;
+  const username = process.env.REACT_APP_USERNAME;
+  const password =process.env.REACT_APP_PASSWORD;
+  const apiKey= process.env.APIKEY
   const [formData, setFormData] = useState({
     name: '',
     jobTitle: '',
@@ -216,9 +220,9 @@ const LandingPage = () => {
       const ongageResponse = await axios.post('https://api.ongage.net/167360/api/v2/contacts/', ongageData, {
         headers: {
           'Content-Type': 'application/json',
-          'x_account_code': process.env.REACT_APP_ACCOUNTCODE,
-          'x_username': process.env.REACT_APP_USERNAME,
-          'x_password': process.env.REACT_APP_PASSWORD
+          'x_account_code': accountCode,
+          'x_username':username,
+          'x_password': password
         }
       });
       console.log('Ongage User created:', ongageResponse.data);
@@ -226,7 +230,7 @@ const LandingPage = () => {
       const campaignerResponse = await axios.post('http://localhost:5000/api/https://edapi.campaigner.com/v1/Subscribers', campaignerData, {
         headers: {
           'Content-Type': 'application/json',
-          'ApiKey': 'c524b1ae-e230-4062-9e6f-45f80eb045cc' 
+          'ApiKey': apiKey
         }
       });
       console.log('Campaigner User created:', campaignerResponse.data);
