@@ -128,7 +128,7 @@ const SubmitButton = styled.button`
   padding: 0.75rem;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #2962ff;
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
@@ -187,7 +187,7 @@ const SubmitButtonDown = styled.button`
   padding: 0.75rem;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #2962ff;
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
@@ -273,7 +273,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('/api/ongage', {
+      const ongageResponse = await fetch('http://18.203.109.44:5000/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -289,7 +289,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('/api/campaigner', {
+      const campaignerResponse = await fetch('http://18.203.109.44:5000/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
