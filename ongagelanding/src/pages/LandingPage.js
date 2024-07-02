@@ -306,8 +306,8 @@ const LandingPage = () => {
       
       // Log out and redirect
       // logOut();
-      window.location.href = `https://jobswish.com/?q=${formData.jobTitle}&l=${formData.zipcode}`;
-      logOut();
+      window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+      // logOut();
     } catch (error) {
       console.error('Error creating user:', error);
     }
