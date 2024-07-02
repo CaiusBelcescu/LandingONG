@@ -273,7 +273,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('/api/ongage', {
+      const ongageResponse = await fetch('http://localhost:5000/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -289,7 +289,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('/api/campaigner', {
+      const campaignerResponse = await fetch('http://localhost:5000/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -305,8 +305,9 @@ const LandingPage = () => {
       console.log('Campaigner User created:', campaignerResult);
       
       // Log out and redirect
-      logOut();
+      // logOut();
       window.location.href = `https://jobswish.com/?q=${formData.jobTitle}&l=${formData.zipcode}`;
+      logOut();
     } catch (error) {
       console.error('Error creating user:', error);
     }
