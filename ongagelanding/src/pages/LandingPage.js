@@ -273,7 +273,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('http://18.203.109.44:5000/api/ongage', {
+      const ongageResponse = await fetch('https://caiusbelcescu.github.io/LandingONG:5000/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -289,7 +289,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('http://18.203.109.44:5000/api/campaigner', {
+      const campaignerResponse = await fetch('https://caiusbelcescu.github.io/LandingONG:5000/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
