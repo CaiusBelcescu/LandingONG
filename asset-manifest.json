@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/LandingONG/static/css/main.b2aaf27e.css",
+    "main.js": "/LandingONG/static/js/main.0ca9e179.js",
+    "static/js/453.d72ff32f.chunk.js": "/LandingONG/static/js/453.d72ff32f.chunk.js",
+    "index.html": "/LandingONG/index.html",
+    "main.b2aaf27e.css.map": "/LandingONG/static/css/main.b2aaf27e.css.map",
+    "main.0ca9e179.js.map": "/LandingONG/static/js/main.0ca9e179.js.map",
+    "453.d72ff32f.chunk.js.map": "/LandingONG/static/js/453.d72ff32f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b2aaf27e.css",
+    "static/js/main.0ca9e179.js"
+  ]
+}
