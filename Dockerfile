@@ -1,24 +1,27 @@
 # Use a base image with Node.js 18
 FROM node:18.16.0
 
-# Set the working directory
-WORKDIR /app
+# Set the working directory for frontend
+WORKDIR /app/ongagelanding
 
 # Copy the frontend package.json and package-lock.json
-COPY ongagelanding/package*.json ./ongagelanding/
-
-# Copy the backend package.json and package-lock.json
-COPY API/package*.json ./API/
+COPY ongagelanding/package*.json ./
 
 # Install dependencies for frontend
-RUN cd ongagelanding && npm install
+RUN npm install
+
+# Set the working directory for backend
+WORKDIR /app/API
+
+# Copy the backend package.json and package-lock.json
+COPY API/package*.json ./
 
 # Install dependencies for backend
-RUN cd API && npm install
+RUN npm install
 
 # Copy the frontend and backend code
-COPY ongagelanding ./ongagelanding
-COPY API ./API
+COPY ongagelanding /app/ongagelanding
+COPY API /app/API
 
 # Expose ports
 EXPOSE 3000 5000
