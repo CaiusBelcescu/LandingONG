@@ -215,7 +215,7 @@ const SubmitButtonDown = styled.button`
 `;
 
 const API_ENDPOINT_ONGAGE = 'https://hi.jobswish.com/api/ongage/';
-const API_ENDPOINT_CAMPAIGNER = 'https://hi.jobswish.com/api/ongage/';
+//const API_ENDPOINT_CAMPAIGNER = 'https://hi.jobswish.com/api/ongage/';
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
@@ -317,20 +317,20 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('http://34.249.201.161:5000/api/campaigner', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(campaignerData)
-      });
-
-      if (!campaignerResponse.ok) {
-        throw new Error('Failed to create Campaigner user');
-      }
-      
-      const campaignerResult = await campaignerResponse.json();
-      console.log('Campaigner User created:', campaignerResult);
+      // const campaignerResponse = await fetch('http://34.249.201.161:5000/api/campaigner', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(campaignerData)
+      // });
+      //
+      // if (!campaignerResponse.ok) {
+      //   throw new Error('Failed to create Campaigner user');
+      // }
+      //
+      // const campaignerResult = await campaignerResponse.json();
+      // console.log('Campaigner User created:', campaignerResult);
 
 
       // const emailResponse = await fetch('http://34.249.201.161:5000/api/email', {
