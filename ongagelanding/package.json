@@ -20,7 +20,8 @@
     "react-scripts": "^5.0.1",
     "styled-components": "^6.1.11",
     "tw-elements-react": "^1.0.0-alpha-end",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "serve": "^14.2.3"
   },
   "scripts": {
     "start": "PORT=8080 react-scripts start",

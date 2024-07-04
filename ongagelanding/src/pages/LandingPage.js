@@ -214,8 +214,9 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-const API_ENDPOINT_ONGAGE = 'https://hi.jobswish.com/api/ongage/';
-//const API_ENDPOINT_CAMPAIGNER = 'https://hi.jobswish.com/api/ongage/';
+const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
+const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
@@ -301,7 +302,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch(API_ENDPOINT_ONGAGE, {
+      const ongageResponse = await fetch(API_ENDPOINT_ONGAGE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -316,21 +317,21 @@ const LandingPage = () => {
       const ongageResult = await ongageResponse.json();
       console.log('Ongage User created:', ongageResult);
   
-      // Call the Campaigner API through your server endpoint
-      // const campaignerResponse = await fetch('http://34.249.201.161:5000/api/campaigner', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(campaignerData)
-      // });
-      //
-      // if (!campaignerResponse.ok) {
-      //   throw new Error('Failed to create Campaigner user');
-      // }
-      //
-      // const campaignerResult = await campaignerResponse.json();
-      // console.log('Campaigner User created:', campaignerResult);
+      //Call the Campaigner API through your server endpoint
+      const campaignerResponse = await fetch(API_ENDPOINT_CAMPAIGNER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(campaignerData)
+      });
+
+      if (!campaignerResponse.ok) {
+        throw new Error('Failed to create Campaigner user');
+      }
+
+      const campaignerResult = await campaignerResponse.json();
+      console.log('Campaigner User created:', campaignerResult);
 
 
       // const emailResponse = await fetch('http://34.249.201.161:5000/api/email', {
