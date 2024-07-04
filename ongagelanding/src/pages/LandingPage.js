@@ -214,6 +214,9 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
+const API_ENDPOINT_ONGAGE = 'https://hi.jobswish.com/api/ongage/';
+const API_ENDPOINT_CAMPAIGNER = 'https://hi.jobswish.com/api/ongage/';
+
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -298,7 +301,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('http://34.249.201.161:5000/api/ongage', {
+      const ongageResponse = await fetch(API_ENDPOINT_ONGAGE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
