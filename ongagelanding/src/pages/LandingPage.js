@@ -185,15 +185,13 @@ const WrapperButtonsDown = styled.div`
   }
 `;
 const InputDown = styled.input`
-  padding: 0.rem;
+  padding: 0.5rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
   width: 100%;
-  max-width: 300px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
-
   @media (max-width: 768px) {
     max-width: 100%;
   }
@@ -300,7 +298,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('34.249.201.161/api/ongage', {
+      const ongageResponse = await fetch('http://34.249.201.161/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -316,7 +314,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('34.249.201.161/api/campaigner', {
+      const campaignerResponse = await fetch('http://34.249.201.161/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
