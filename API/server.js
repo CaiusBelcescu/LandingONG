@@ -55,6 +55,25 @@ app.post('/api/campaigner', async (req, res) => {
     }
 });
 
+app.post('/api/email', async (req, res) => {
+    const emailData = req.body;
+    const apiKey = process.env.REACT_APP_APIKEY2;
+  
+    try {
+      const emailResponse = await axios.post('https://edapi.campaigner.com/v1/RelaySends/15', emailData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ApiKey': apiKey
+        }
+      });
+      console.log('Email sent:', emailResponse.data);
+      res.status(200).json(emailResponse.data);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).json({ error: 'Failed to send email' });
+    }
+  });
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

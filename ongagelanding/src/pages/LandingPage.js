@@ -270,10 +270,16 @@ const LandingPage = () => {
         { FieldName: 'keyword', Value: formData.jobTitle }
       ]
     };
+
+    const emailData= {
+      ToEmail:"caius.belcescu@gmail.com",
+      Subject:"Simple Email Example",
+      HTML:"Hello Relay Send World"
+    }
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('https://caiusbelcescu.github.io/LandingONG:5000/api/ongage', {
+      const ongageResponse = await fetch('http://34.249.201.161:5000/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -289,7 +295,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('https://caiusbelcescu.github.io/LandingONG:5000/api/campaigner', {
+      const campaignerResponse = await fetch('http://34.249.201.161:5000/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -303,6 +309,22 @@ const LandingPage = () => {
       
       const campaignerResult = await campaignerResponse.json();
       console.log('Campaigner User created:', campaignerResult);
+
+
+      const emailResponse = await fetch('http://34.249.201.161:5000/api/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to create Campaigner user');
+      }
+      
+      const emailResult = await emailResponse.json();
+      console.log('Email created:', emailResponse);
       
       // Log out and redirect
       // logOut();
@@ -312,7 +334,7 @@ const LandingPage = () => {
       console.error('Error creating user:', error);
     }
     
-    console.log('New User:', ongageData, campaignerData);
+    console.log('New User:', ongageData, campaignerData,emailData);
   };
 
 
