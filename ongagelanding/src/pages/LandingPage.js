@@ -156,7 +156,18 @@ const GoogleButton = styled.button`
     max-width: 100%;
   }
 `;
-
+const Form2 = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  font-size: 1rem;
+  padding: 0.75rem;
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
 const Logo = styled.img`
   max-width: 100%;
   height: 100%;
@@ -174,13 +185,18 @@ const WrapperButtonsDown = styled.div`
   }
 `;
 const InputDown = styled.input`
-  padding: 0.5rem;
+  padding: 0.rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
   width: 100%;
+  max-width: 300px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const SubmitButtonDown = styled.button`
@@ -192,7 +208,12 @@ const SubmitButtonDown = styled.button`
   font-size: 1rem;
   cursor: pointer;
   width: 100%;
+  max-width: 300px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const LandingPage = () => {
@@ -279,7 +300,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('http://34.249.201.161:5000/api/ongage', {
+      const ongageResponse = await fetch('34.249.201.161/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -295,7 +316,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('http://34.249.201.161:5000/api/campaigner', {
+      const campaignerResponse = await fetch('34.249.201.161/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -311,20 +332,20 @@ const LandingPage = () => {
       console.log('Campaigner User created:', campaignerResult);
 
 
-      const emailResponse = await fetch('http://34.249.201.161:5000/api/email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(emailData)
-      });
+      // const emailResponse = await fetch('34.249.201.161:5000/api/email', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(emailData)
+      // });
 
-      if (!emailResponse.ok) {
-        throw new Error('Failed to create Campaigner user');
-      }
+      // if (!emailResponse.ok) {
+      //   throw new Error('Failed to create Campaigner user');
+      // }
       
-      const emailResult = await emailResponse.json();
-      console.log('Email created:', emailResponse);
+      // const emailResult = await emailResponse.json();
+      // console.log('Email created:', emailResult);
       
       // Log out and redirect
       // logOut();
@@ -407,19 +428,19 @@ const LandingPage = () => {
                 <Text>OR</Text>
                 <HorizontalLine />
               </LineContainer>
-              <WrapperButtonsDown>
-                <Form onSubmit={handleContinue}>
-                  <InputDown
-                    type="text"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleInputEmail}
-                    required
-                  />
-                  <SubmitButtonDown type="submit" >Continue</SubmitButtonDown>
-                </Form>
-              </WrapperButtonsDown>
+              
+              <Form2 onSubmit={handleContinue}>
+                <InputDown
+                  type="text"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleInputEmail}
+                  required
+                />
+                <SubmitButtonDown type="submit" >Continue</SubmitButtonDown>
+              </Form2>
+              
             </>
           )}
         </LeftSection>
