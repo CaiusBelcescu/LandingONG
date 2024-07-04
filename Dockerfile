@@ -24,7 +24,7 @@ COPY ongagelanding /app/ongagelanding
 COPY API /app/API
 
 # Expose ports
-EXPOSE 3000 5000
+EXPOSE 8080 5000
 
 # Copy the entrypoint script
 COPY docker-entrypoint.sh /

@@ -57,13 +57,14 @@ app.post('/api/campaigner', async (req, res) => {
 
 app.post('/api/email', async (req, res) => {
     const emailData = req.body;
-    const apiKey = process.env.REACT_APP_APIKEY2;
+    const apiKey2 = process.env.REACT_APP_APIKEY2;
+    console.log(apiKey2)
   
     try {
       const emailResponse = await axios.post('https://edapi.campaigner.com/v1/RelaySends/10722', emailData, {
         headers: {
           'Content-Type': 'application/json',
-          'ApiKey': apiKey
+          'ApiKey': apiKey2
         }
       });
       console.log('Email sent:', emailResponse.data);
