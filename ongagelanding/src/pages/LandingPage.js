@@ -298,7 +298,7 @@ const LandingPage = () => {
   
     try {
       // Call the Ongage API through your server endpoint
-      const ongageResponse = await fetch('http://34.249.201.161:5000/api/ongage', {
+      const ongageResponse = await fetch('/api/ongage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -314,7 +314,7 @@ const LandingPage = () => {
       console.log('Ongage User created:', ongageResult);
   
       // Call the Campaigner API through your server endpoint
-      const campaignerResponse = await fetch('http://34.249.201.161:5000/api/campaigner', {
+      const campaignerResponse = await fetch('/api/campaigner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

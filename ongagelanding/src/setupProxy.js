@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://edapi.campaigner.com',
+      target: 'https://localhost:5000',
       changeOrigin: true,
       pathRewrite: {
         '^/api': '',
