@@ -7,6 +7,17 @@ import Footer from './components/Footer';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.REACT_APP_RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const clientID = process.env.REACT_APP_CLIENT_ID;
 
   return (

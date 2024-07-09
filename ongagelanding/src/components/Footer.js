@@ -15,6 +15,7 @@ const FooterTop = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2rem; //Chapcha space 
 
   @media (max-width: 768px) {
     flex-direction: column;
