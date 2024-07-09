@@ -97,27 +97,6 @@ app.post('/api/email', async (req, res) => {
 });
 
 
-app.post('/api/verify-recaptcha', async (req, res) => {
-    const { token } = req.body;
-    const secretKey = '6LcQJgsqAAAAABmVT1fDwRE_i30WLJSzd_uLLkCt'; // replace with your secret key
-
-    try {
-        const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-            params: {
-                secret: secretKey,
-                response: token
-            }
-        });
-
-        if (response.data.success) {
-            res.json({ success: true });
-        } else {
-            res.status(400).json({ success: false, error: response.data['error-codes'] });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
 
 const PORT = process.env.PORT || 5000;
 

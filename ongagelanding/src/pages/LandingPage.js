@@ -244,7 +244,7 @@ const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
-const API_ENDPOINT_VERIFY_RECAPTCHA = API_ENDPOINT_ROOT_URL + 'verify-recaptcha/';
+
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
