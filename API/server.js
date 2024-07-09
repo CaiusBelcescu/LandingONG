@@ -1,24 +1,45 @@
 const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
 const axios = require('axios');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-
-// Load environment variables from .env file
-dotenv.config({ path: path.join(__dirname, `.env.local`) });
+dotenv.config({ path: path.join(__dirname, process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local') });
 
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 app.use(express.json());
+
+wss.on('connection', (ws) => {
+    console.log('New WebSocket connection');
+  
+    ws.on('message', (message) => {
+      console.log('Received message:', message);
+    });
+  
+    ws.on('close', () => {
+      console.log('WebSocket connection closed');
+    });
+  
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  
+    // Send a welcome message to the client
+    ws.send('Welcome to the WebSocket server!');
+  });
 
 app.post('/api/ongage', async (req, res) => {
     const ongageData = req.body;
     const accountCode = process.env.REACT_APP_ACCOUNTCODE;
     const username = process.env.REACT_APP_USERNAME;
     const password = process.env.REACT_APP_PASSWORD;
-    console.log("accountcode "+accountCode)
+    console.log("accountcode " + accountCode)
 
     try {
         const ongageResponse = await axios.post('https://api.ongage.net/167360/api/v2/contacts/', ongageData, {
@@ -59,24 +80,47 @@ app.post('/api/email', async (req, res) => {
     const emailData = req.body;
     const apiKey2 = process.env.REACT_APP_APIKEY2;
     console.log(apiKey2)
-  
+
     try {
-      const emailResponse = await axios.post('https://edapi.campaigner.com/v1/RelaySends/10722', emailData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'ApiKey': apiKey2
-        }
-      });
-      console.log('Email sent:', emailResponse.data);
-      res.status(200).json(emailResponse.data);
+        const emailResponse = await axios.post('https://edapi.campaigner.com/v1/RelaySends/10722', emailData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'ApiKey': apiKey2
+            }
+        });
+        console.log('Email sent:', emailResponse.data);
+        res.status(200).json(emailResponse.data);
     } catch (error) {
-      console.error('Error sending email:', error);
-      res.status(500).json({ error: 'Failed to send email' });
+        console.error('Error sending email:', error);
+        res.status(500).json({ error: 'Failed to send email' });
     }
-  });
+});
+
+
+app.post('/api/verify-recaptcha', async (req, res) => {
+    const { token } = req.body;
+    const secretKey = '6LcQJgsqAAAAABmVT1fDwRE_i30WLJSzd_uLLkCt'; // replace with your secret key
+
+    try {
+        const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+            params: {
+                secret: secretKey,
+                response: token
+            }
+        });
+
+        if (response.data.success) {
+            res.json({ success: true });
+        } else {
+            res.status(400).json({ success: false, error: response.data['error-codes'] });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`CORS proxy server running on port ${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

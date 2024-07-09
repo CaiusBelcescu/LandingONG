@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-
+import image from '../props/AmericanPicture1.webp'
 
 const Container = styled.div`
   display: flex;
@@ -20,11 +20,29 @@ const Container = styled.div`
     margin-top: 0;
   }
 `;
+const RequiredAsterisk = styled.span`
+  color: red;
+  margin-left: 0.25rem;
+`;
+const Label = styled.label`
+  display: block;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 300px;
+  text-align: left;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  /* padding: 2rem; */
   max-width: 1200px;
   background-color: #fff;
   border-radius: 15px;
@@ -37,12 +55,14 @@ const Wrapper = styled.div`
 `;
 
 const LeftSection = styled.div`
+  
   flex: 1;
   display: flex;
+  padding: 3rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  /* padding: 2rem; */
 
   @media (max-width: 768px) {
     align-items: center;
@@ -64,7 +84,13 @@ const RightSection = styled.div`
 
 const Title = styled.h1`
   color: #333;
+  margin-top: 0px;
   font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.1rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 20px;
 
   @media (max-width: 768px) {
     font-size: 2rem;
@@ -74,8 +100,10 @@ const Title = styled.h1`
 const Subtitle = styled.h2`
   color: #666;
   font-size: 1.5rem;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  /* margin-top: 0.5rem; */
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  text-align: center;
 
   @media (max-width: 768px) {
     font-size: 1.25rem;
@@ -93,22 +121,27 @@ const Form = styled.form`
 const Input = styled.input`
   padding: 0.5rem;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ invalid }) => (invalid ? 'red' : '#ccc')}; /* Red border if invalid */
   border-radius: 4px;
   font-size: 1rem;
   width: 100%;
   max-width: 300px;
+  background-color: ${({ readOnly }) => (readOnly ? '#e0e0e0' : '#fff')};
 
   @media (max-width: 768px) {
     max-width: 100%;
   }
-`;
 
+  &:read-only {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+  }
+`;
 const LineContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 60px; /* Adjust height as needed */
+    height: 30px;
 `;
 
 const HorizontalLine = styled.div`
@@ -163,7 +196,7 @@ const Form2 = styled.form`
   width: 100%;
   max-width: 300px;
   font-size: 1rem;
-  padding: 0.75rem;
+  /* padding: 0.75rem; */
   @media (max-width: 768px) {
     max-width: 100%;
   }
@@ -174,14 +207,6 @@ const Logo = styled.img`
 
   @media (max-width: 768px) {
     max-width: 50%;
-  }
-`;
-const WrapperButtonsDown = styled.div`
-  width: 100%;
-  max-width: 300px;
-
-  @media (max-width: 768px) {
-    max-width: 100%;
   }
 `;
 const InputDown = styled.input`
@@ -203,6 +228,7 @@ const SubmitButtonDown = styled.button`
   border-radius: 4px;
   background-color: #2962ff;
   color: #fff;
+  margin-bottom: 1rem;
   font-size: 1rem;
   cursor: pointer;
   width: 100%;
@@ -214,13 +240,16 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
+const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
+const API_ENDPOINT_VERIFY_RECAPTCHA = API_ENDPOINT_ROOT_URL + 'verify-recaptcha/';
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     jobTitle: '',
@@ -276,7 +305,7 @@ const LandingPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    let contor=0;
     const ongageData = {
       email: formData.email,
       overwrite: true,
@@ -295,7 +324,10 @@ const LandingPage = () => {
     };
 
     const emailData= {
-      ToEmail:"caius.belcescu@gmail.com",
+      FromName:"Petra Job",
+      FromEmail: "info@notifications.petrajob.com",
+      ReplyTo: "info@notifications.petrajob.com",
+      ToEmail:formData.email,
       Subject:"Simple Email Example",
       HTML:"Hello Relay Send World"
     }
@@ -316,7 +348,12 @@ const LandingPage = () => {
 
       const ongageResult = await ongageResponse.json();
       console.log('Ongage User created:', ongageResult);
-  
+      contor=contor+1;
+      
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+    try {
       //Call the Campaigner API through your server endpoint
       const campaignerResponse = await fetch(API_ENDPOINT_CAMPAIGNER_URL, {
         method: 'POST',
@@ -331,35 +368,38 @@ const LandingPage = () => {
       }
 
       const campaignerResult = await campaignerResponse.json();
+      contor=contor+1;
       console.log('Campaigner User created:', campaignerResult);
-
-
-      // const emailResponse = await fetch('http://34.249.201.161:5000/api/email', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(emailData)
-      // });
-
-      // if (!emailResponse.ok) {
-      //   throw new Error('Failed to create Campaigner user');
-      // }
-      
-      // const emailResult = await emailResponse.json();
-      // console.log('Email created:', emailResult);
-      
-      // Log out and redirect
-      // logOut();
-      window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
-      // logOut();
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.log('Error campainer:', error);
     }
-    
+
+    try {
+      const emailResponse = await fetch(API_ENDPOINT_EMAIL_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(emailData)
+        });
+  
+        if (!emailResponse.ok) {
+          throw new Error('Failed to create Campaigner user');
+        }
+        
+        const emailResult = await emailResponse.json();
+        contor=contor+1;
+        console.log('Email created:', emailResult);
+    } catch (error) {
+      console.log('Error email:', error);
+    }
+  
+    if(contor === 3)
+    {
+      window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    }
     console.log('New User:', ongageData, campaignerData,emailData);
   };
-
 
   
 
@@ -373,53 +413,81 @@ const LandingPage = () => {
       email: ''
     });
   };
+  useEffect(() => {
+    const loadRecaptcha = async () => {
+      try {
+        const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+        if (siteKey && window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(siteKey, { action: 'submit' }).then((token) => {
+              setRecaptchaToken(token);
+            });
+          });
+        }
+      } catch (error) {
+        console.error('Error loading reCAPTCHA:', error);
+      }
+    };
+
+    loadRecaptcha();
+  }, []);
+
+
 
   return (
     <Container>
       <Wrapper>
         <LeftSection>
-          <Title>Get job alerts straight to your inbox! Subscribe now!</Title>
-          <Subtitle>
-            Looking for your dream job? <p> Search for job openings based on your preferred role and location.</p>
-          </Subtitle>
+        <Title>
+          Get Daily Job Alerts straight to your inbox! 
+        </Title>
+        <Title>Subscribe now!</Title>
+        <Subtitle>
+          Get Access to Over 3M Job Openings Now 
+          <p>Search for job openings based on your preferred role and location.</p>
+        </Subtitle>
+
           {profile ? (
             <>
               <Form onSubmit={handleSubmit}>
+                
                 <Input
                   type="text"
                   name="name"
-                  placeholder="Name"
+                  placeholder="Name*"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
                 />
+                
                 <Input
                   type="text"
                   name="jobTitle"
-                  placeholder="Job Title"
+                  placeholder="Job Title*"
                   value={formData.jobTitle}
                   onChange={handleInputChange}
                   required
                 />
-
+                
                 <Input
                   type="text"
                   name="zipcode"
-                  placeholder="Zipcode"
+                  placeholder="Zipcode*"
                   value={formData.zipcode}
                   onChange={handleInputChange}
                   required
                 />
+                
                 <Input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email*"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
                   readOnly
                 />
-                <SubmitButton type="submit">Register</SubmitButton>
+                <SubmitButton type="submit">Submit</SubmitButton>
               </Form>
             </>
           ) : (
@@ -435,7 +503,7 @@ const LandingPage = () => {
                 <InputDown
                   type="text"
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email*"
                   value={formData.email}
                   onChange={handleInputEmail}
                   required
@@ -447,7 +515,7 @@ const LandingPage = () => {
           )}
         </LeftSection>
         <RightSection>
-          <Logo src="https://welcome.jobswish.com/img/pexels-alessio-cesario-1906879.5d688f25.jpg" alt="Logo" />
+          <Logo src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/aa/d4/a8/caption.jpg" alt="Logo" />
         </RightSection>
       </Wrapper>
     </Container>
