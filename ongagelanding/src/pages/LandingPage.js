@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import ReCAPTCHA from 'react-google-recaptcha';
 import image from '../props/AmericanPicture1.webp'
 
 const Container = styled.div`
@@ -415,25 +414,23 @@ const LandingPage = () => {
     });
   };
   useEffect(() => {
-  const loadRecaptcha = async () => {
-    try {
-      const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
-      console.log(siteKey);
-
-      if (siteKey && window.grecaptcha) {
-        window.grecaptcha.ready(() => {
-          window.grecaptcha.execute(siteKey, { action: 'submit' }).then((token) => {
-            setRecaptchaToken(token);
+    const loadRecaptcha = async () => {
+      try {
+        const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+        if (siteKey && window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(siteKey, { action: 'submit' }).then((token) => {
+              setRecaptchaToken(token);
+            });
           });
-        });
+        }
+      } catch (error) {
+        console.error('Error loading reCAPTCHA:', error);
       }
-    } catch (error) {
-      console.error('Error loading reCAPTCHA:', error);
-    }
-  };
+    };
 
-  loadRecaptcha();
-}, []);
+    loadRecaptcha();
+  }, []);
 
 
 
