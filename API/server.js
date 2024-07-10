@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const WebSocket = require('ws');
 const axios = require('axios');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -10,29 +9,11 @@ dotenv.config({ path: path.join(__dirname, process.env.NODE_ENV === 'production'
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 
 app.use(cors());
 app.use(express.json());
 
-wss.on('connection', (ws) => {
-    console.log('New WebSocket connection');
-  
-    ws.on('message', (message) => {
-      console.log('Received message:', message);
-    });
-  
-    ws.on('close', () => {
-      console.log('WebSocket connection closed');
-    });
-  
-    ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
-    });
-  
-    // Send a welcome message to the client
-    ws.send('Welcome to the WebSocket server!');
-  });
+
 
 app.post('/api/ongage', async (req, res) => {
     const ongageData = req.body;
@@ -95,8 +76,6 @@ app.post('/api/email', async (req, res) => {
         res.status(500).json({ error: 'Failed to send email' });
     }
 });
-
-
 
 const PORT = process.env.PORT || 5000;
 
