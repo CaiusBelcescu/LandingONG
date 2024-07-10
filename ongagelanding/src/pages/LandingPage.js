@@ -8,7 +8,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 16vh); /* Adjust based on your navbar and footer height */
+  min-height: calc(100vh - 13rem); /* Adjust based on your navbar and footer height */
   padding: 1rem;
   background-color: #f0f0f0;
   box-sizing: border-box;
