@@ -305,7 +305,6 @@ const LandingPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let contor=0;
     const ongageData = {
       email: formData.email,
       overwrite: true,
@@ -348,7 +347,6 @@ const LandingPage = () => {
 
       const ongageResult = await ongageResponse.json();
       console.log('Ongage User created:', ongageResult);
-      contor=contor+1;
       
     } catch (error) {
       console.error('Error creating user:', error);
@@ -368,7 +366,6 @@ const LandingPage = () => {
       }
 
       const campaignerResult = await campaignerResponse.json();
-      contor=contor+1;
       console.log('Campaigner User created:', campaignerResult);
     } catch (error) {
       console.log('Error campainer:', error);
@@ -388,16 +385,14 @@ const LandingPage = () => {
         }
         
         const emailResult = await emailResponse.json();
-        contor=contor+1;
+
         console.log('Email created:', emailResult);
     } catch (error) {
       console.log('Error email:', error);
     }
   
-    if(contor === 3)
-    {
-      window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
-    }
+    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    
     console.log('New User:', ongageData, campaignerData,emailData);
   };
 
