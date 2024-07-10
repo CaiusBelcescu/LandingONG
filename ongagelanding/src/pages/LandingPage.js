@@ -487,7 +487,7 @@ const LandingPage = () => {
             </>
           ) : (
             <>
-              <GoogleButton onClick={login}>Sign in with Google 🚀</GoogleButton>
+              <GoogleButton onClick={login}>Sign in with Google 🚀T</GoogleButton>
               <LineContainer>
                 <HorizontalLine />
                 <Text>OR</Text>
