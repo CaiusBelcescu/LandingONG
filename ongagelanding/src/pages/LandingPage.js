@@ -240,6 +240,7 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
+// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
 const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
@@ -368,9 +369,11 @@ const LandingPage = () => {
       const campaignerResult = await campaignerResponse.json();
       console.log('Campaigner User created:', campaignerResult);
 
-      // Check if the user was created within the last minute
+      
       const createdAt = new Date(campaignerResult.Created);
-      console.log(createdAt)
+      createdAt.setHours(createdAt.getHours() + 3);
+      console.log('Adjusted Created At:', createdAt);
+
       const now = new Date();
       console.log(now)
       const timeDiff = (now - createdAt) / 1000; // time difference in seconds
@@ -403,7 +406,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
 
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
 
     console.log('New User:', ongageData, campaignerData, emailData);
   };
