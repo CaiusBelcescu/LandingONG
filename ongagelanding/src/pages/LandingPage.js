@@ -240,7 +240,7 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
@@ -314,7 +314,7 @@ const LandingPage = () => {
         keyword: formData.jobTitle
       }
     };
-  
+
     const campaignerData = {
       EmailAddress: formData.email,
       CustomFields: [
@@ -329,8 +329,8 @@ const LandingPage = () => {
       ToEmail:formData.email,
       Subject:"Simple Email Example",
       HTML:"Hello Relay Send World"
-    }
-  
+    };
+
     try {
       // Call the Ongage API through your server endpoint
       const ongageResponse = await fetch(API_ENDPOINT_ONGAGE_URL, {
@@ -340,19 +340,19 @@ const LandingPage = () => {
         },
         body: JSON.stringify(ongageData)
       });
-      
+
       if (!ongageResponse.ok) {
         throw new Error('Failed to create Ongage user');
       }
 
       const ongageResult = await ongageResponse.json();
       console.log('Ongage User created:', ongageResult);
-      
     } catch (error) {
       console.error('Error creating user:', error);
     }
+
     try {
-      //Call the Campaigner API through your server endpoint
+      // Call the Campaigner API through your server endpoint
       const campaignerResponse = await fetch(API_ENDPOINT_CAMPAIGNER_URL, {
         method: 'POST',
         headers: {
@@ -367,33 +367,45 @@ const LandingPage = () => {
 
       const campaignerResult = await campaignerResponse.json();
       console.log('Campaigner User created:', campaignerResult);
-    } catch (error) {
-      console.log('Error campainer:', error);
-    }
 
-    try {
-      const emailResponse = await fetch(API_ENDPOINT_EMAIL_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(emailData)
-        });
-  
-        if (!emailResponse.ok) {
-          throw new Error('Failed to create Campaigner user');
+      // Check if the user was created within the last minute
+      const createdAt = new Date(campaignerResult.Created);
+      console.log(createdAt)
+      const now = new Date();
+      console.log(now)
+      const timeDiff = (now - createdAt) / 1000; // time difference in seconds
+      console.log(timeDiff)
+
+      if (timeDiff <= 60) {
+        // Send the email
+        try {
+          const emailResponse = await fetch(API_ENDPOINT_EMAIL_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailData)
+          });
+
+          if (!emailResponse.ok) {
+            throw new Error('Failed to send email');
+          }
+
+          const emailResult = await emailResponse.json();
+          console.log('Email sent:', emailResult);
+        } catch (error) {
+          console.error('Error sending email:', error);
         }
-        
-        const emailResult = await emailResponse.json();
-
-        console.log('Email created:', emailResult);
+      } else {
+        console.log('User not created within the last minute, email not sent');
+      }
     } catch (error) {
-      console.log('Error email:', error);
+      console.error('Error creating Campaigner user:', error);
     }
-  
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
-    
-    console.log('New User:', ongageData, campaignerData,emailData);
+
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+
+    console.log('New User:', ongageData, campaignerData, emailData);
   };
 
   
