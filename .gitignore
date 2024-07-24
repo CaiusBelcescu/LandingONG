@@ -132,3 +132,5 @@ dist
 #.env file
 .env.keys
 .env.*
+
+.DS_Store

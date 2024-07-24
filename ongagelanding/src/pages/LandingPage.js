@@ -8,7 +8,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 16vh); /* Adjust based on your navbar and footer height */
+  min-height: calc(100vh - 13rem); /* Adjust based on your navbar and footer height */
   padding: 1rem;
   background-color: #f0f0f0;
   box-sizing: border-box;
@@ -246,7 +246,7 @@ const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
-const API_ENDPOINT_VERIFY_RECAPTCHA = API_ENDPOINT_ROOT_URL + 'verify-recaptcha/';
+
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
@@ -475,7 +475,9 @@ const LandingPage = () => {
       const timeDiff = (now - createdAt) / 1000; // time difference in seconds
       console.log(timeDiff)
 
+
       if (timeDiff <= 300) {
+
         // Send the email
         try {
           const emailResponse = await fetch(API_ENDPOINT_EMAIL_URL, {
