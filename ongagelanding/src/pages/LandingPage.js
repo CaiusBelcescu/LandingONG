@@ -104,6 +104,7 @@ const Subtitle = styled.h2`
   margin-bottom: 1.5rem;
   line-height: 1.3;
   text-align: center;
+  padding: 10px;
 
   @media (max-width: 768px) {
     font-size: 1.25rem;
@@ -240,7 +241,8 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
@@ -248,6 +250,7 @@ const API_ENDPOINT_VERIFY_RECAPTCHA = API_ENDPOINT_ROOT_URL + 'verify-recaptcha/
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
+  const [emailToSendFirstEmail,setEmailToSendFirstEmail]=useState('');
   const [profile, setProfile] = useState(null);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [formData, setFormData] = useState({
@@ -256,7 +259,8 @@ const LandingPage = () => {
     zipcode: '',
     email: ''
   });
-
+  const [locationData, setLocationData] = useState({ city: '', state: '' });
+  const [isZipValid, setIsZipValid] = useState(true);
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => setUser(tokenResponse),
@@ -274,6 +278,7 @@ const LandingPage = () => {
         })
         .then((res) => {
           setProfile(res.data);
+          setEmailToSendFirstEmail(res.data.email)
           setFormData({
             ...formData,
             name: res.data.name,
@@ -283,6 +288,65 @@ const LandingPage = () => {
         .catch((err) => console.log(err));
     }
   }, [user]);
+
+  useEffect(() => {
+    const sendData = async () => {
+      if (!emailToSendFirstEmail) return;
+
+      const ongageData = {
+        email: formData.email,
+        overwrite: true,
+        fields: {
+        }
+      };
+
+      const campaignerData = {
+        EmailAddress: emailToSendFirstEmail,
+      };
+
+      try {
+        const ongageResponse = await fetch(API_ENDPOINT_ONGAGE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ongageData),
+        });
+
+        if (!ongageResponse.ok) {
+          throw new Error('Failed to create Ongage user');
+        }
+
+        const ongageResult = await ongageResponse.json();
+        console.log('Ongage User created:', ongageResult);
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
+
+      try {
+        const campaignerResponse = await fetch(API_ENDPOINT_CAMPAIGNER_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(campaignerData),
+        });
+
+        if (!campaignerResponse.ok) {
+          throw new Error('Failed to create Campaigner user');
+        }
+
+        const campaignerResult = await campaignerResponse.json();
+        console.log('Campaigner User created:', campaignerResult);
+      } catch (error) {
+        console.log('Error creating Campaigner user:', error);
+      }
+    };
+
+    sendData();
+  }, [emailToSendFirstEmail]);
+
+
 
   const handleInputEmail = (e) => {
     setFormData({
@@ -297,15 +361,47 @@ const LandingPage = () => {
       ...formData,
       [name]: value
     });
+
+    if (name === 'zipcode') {
+      validateZip(value);
+    }
   };
+
+  const validateZip = async (zip) => {
+    if (/^\d{5}$/.test(zip)) {
+      try {
+        const response = await axios.get(`https://api.zippopotam.us/us/${zip}`);
+        if (response.data) {
+          setLocationData({
+            city: response.data.places[0]['place name'],
+            state: response.data.places[0]['state abbreviation']
+          });
+          setIsZipValid(true);
+        }
+      } catch (error) {
+        setIsZipValid(false);
+        setLocationData({ city: '', state: '' });
+      }
+    } else {
+      setIsZipValid(false);
+      setLocationData({ city: '', state: '' });
+    }
+  };
+
 
   const handleContinue = () => {
     setProfile(formData.email)
+    setEmailToSendFirstEmail(formData.email)
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let contor=0;
+    
+    if (!isZipValid) {
+      console.log('Invalid ZIP code, cannot submit form.');
+      return;
+    }
+
     const ongageData = {
       email: formData.email,
       overwrite: true,
@@ -315,7 +411,7 @@ const LandingPage = () => {
         keyword: formData.jobTitle
       }
     };
-  
+
     const campaignerData = {
       EmailAddress: formData.email,
       CustomFields: [
@@ -330,8 +426,8 @@ const LandingPage = () => {
       ToEmail:formData.email,
       Subject:"Simple Email Example",
       HTML:"Hello Relay Send World"
-    }
-  
+    };
+
     try {
       // Call the Ongage API through your server endpoint
       const ongageResponse = await fetch(API_ENDPOINT_ONGAGE_URL, {
@@ -341,20 +437,19 @@ const LandingPage = () => {
         },
         body: JSON.stringify(ongageData)
       });
-      
+
       if (!ongageResponse.ok) {
         throw new Error('Failed to create Ongage user');
       }
 
       const ongageResult = await ongageResponse.json();
       console.log('Ongage User created:', ongageResult);
-      contor=contor+1;
-      
     } catch (error) {
       console.error('Error creating user:', error);
     }
+
     try {
-      //Call the Campaigner API through your server endpoint
+      // Call the Campaigner API through your server endpoint
       const campaignerResponse = await fetch(API_ENDPOINT_CAMPAIGNER_URL, {
         method: 'POST',
         headers: {
@@ -368,37 +463,48 @@ const LandingPage = () => {
       }
 
       const campaignerResult = await campaignerResponse.json();
-      contor=contor+1;
       console.log('Campaigner User created:', campaignerResult);
+
+      
+      const createdAt = new Date(campaignerResult.Created);
+      createdAt.setHours(createdAt.getHours() + 3);
+      console.log('Adjusted Created At:', createdAt);
+
+      const now = new Date();
+      console.log(now)
+      const timeDiff = (now - createdAt) / 1000; // time difference in seconds
+      console.log(timeDiff)
+
+      if (timeDiff <= 300) {
+        // Send the email
+        try {
+          const emailResponse = await fetch(API_ENDPOINT_EMAIL_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailData)
+          });
+
+          if (!emailResponse.ok) {
+            throw new Error('Failed to send email');
+          }
+
+          const emailResult = await emailResponse.json();
+          console.log('Email sent:', emailResult);
+        } catch (error) {
+          console.error('Error sending email:', error);
+        }
+      } else {
+        console.log('User not created within the last minute, email not sent');
+      }
     } catch (error) {
-      console.log('Error campainer:', error);
+      console.error('Error creating Campaigner user:', error);
     }
 
-    try {
-      const emailResponse = await fetch(API_ENDPOINT_EMAIL_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(emailData)
-        });
-  
-        if (!emailResponse.ok) {
-          throw new Error('Failed to create Campaigner user');
-        }
-        
-        const emailResult = await emailResponse.json();
-        contor=contor+1;
-        console.log('Email created:', emailResult);
-    } catch (error) {
-      console.log('Error email:', error);
-    }
-  
-    if(contor === 3)
-    {
-      window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
-    }
-    console.log('New User:', ongageData, campaignerData,emailData);
+    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+
+    console.log('New User:', ongageData, campaignerData, emailData);
   };
 
   
@@ -441,10 +547,9 @@ const LandingPage = () => {
         <Title>
           Get Daily Job Alerts straight to your inbox! 
         </Title>
-        <Title>Subscribe now!</Title>
-        <Subtitle>
+
+        <Subtitle style={{color:'#2962ff'}}>
           Get Access to Over 3M Job Openings Now 
-          <p>Search for job openings based on your preferred role and location.</p>
         </Subtitle>
 
           {profile ? (
@@ -476,6 +581,7 @@ const LandingPage = () => {
                   value={formData.zipcode}
                   onChange={handleInputChange}
                   required
+                  invalid={!isZipValid}
                 />
                 
                 <Input
@@ -488,6 +594,10 @@ const LandingPage = () => {
                   readOnly
                 />
                 <SubmitButton type="submit">Submit</SubmitButton>
+                {!isZipValid && <span style={{ color: 'red' , marginTop:'10px'}}>Invalid ZIP code</span>}
+                {locationData.city && locationData.state && (
+                  <></>
+                )}
               </Form>
             </>
           ) : (
@@ -513,6 +623,9 @@ const LandingPage = () => {
               
             </>
           )}
+          <Subtitle>
+            Search for job openings based on your preferred role and location.
+          </Subtitle>
         </LeftSection>
         <RightSection>
           <Logo src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/aa/d4/a8/caption.jpg" alt="Logo" />
