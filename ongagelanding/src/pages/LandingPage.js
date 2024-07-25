@@ -435,7 +435,7 @@ const LandingPage = () => {
       FromEmail: "info@hi.jobswish.com",
       ReplyTo: "info@hi.jobswish.com",
       ToEmail:formData.email,
-      Subject:"Simple Email Example",
+      Subject:"Welcome to Jobs Wish",
       HTML:""
     };
 
