@@ -100,7 +100,6 @@ const Title = styled.h1`
 const Subtitle = styled.h2`
   color: #666;
   font-size: 1.5rem;
-  /* margin-top: 0.5rem; */
   margin-bottom: 1.5rem;
   line-height: 1.3;
   text-align: center;
@@ -213,7 +212,8 @@ const Logo = styled.img`
 const InputDown = styled.input`
   padding: 0.5rem;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
+  border: 1px solid ${({ invalid }) => (invalid ? 'red' : '#ccc')};
   border-radius: 4px;
   font-size: 1rem;
   width: 100%;
@@ -241,18 +241,21 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
-const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+// const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
-
+const API_ENDPOINT_TEMPLATE = API_ENDPOINT_ROOT_URL + 'template/';
+const API_ENDPOINT_VERIFY_ZIPCODE= 'https://api.zippopotam.us/us/';
+const API_ENDPOINT_GOOGLE_AUTH='https://www.googleapis.com/oauth2/v1/userinfo?access_token='
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [emailToSendFirstEmail,setEmailToSendFirstEmail]=useState('');
   const [profile, setProfile] = useState(null);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [emailValid,setEmailValid]= useState(true)
   const [formData, setFormData] = useState({
     name: '',
     jobTitle: '',
@@ -270,7 +273,7 @@ const LandingPage = () => {
   useEffect(() => {
     if (user) {
       axios
-        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+        .get(`${API_ENDPOINT_GOOGLE_AUTH}${user.access_token}`, {
           headers: {
             Authorization: `Bearer ${user.access_token}`,
             Accept: 'application/json'
@@ -362,15 +365,31 @@ const LandingPage = () => {
       [name]: value
     });
 
-    if (name === 'zipcode') {
-      validateZip(value);
-    }
   };
 
-  const validateZip = async (zip) => {
+
+
+  const handleContinue = (e) => {
+    e.preventDefault();
+    
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    console.log(formData.email)
+    if (!emailPattern.test(formData.email)) {
+      console.log('Invalid email format');
+      setEmailValid(false)
+      return;
+    }
+    
+    setProfile(formData.email);
+    setEmailToSendFirstEmail(formData.email);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const zip=formData.zipcode
     if (/^\d{5}$/.test(zip)) {
       try {
-        const response = await axios.get(`https://api.zippopotam.us/us/${zip}`);
+        const response = await axios.get(`${API_ENDPOINT_VERIFY_ZIPCODE}${zip}`);
         if (response.data) {
           setLocationData({
             city: response.data.places[0]['place name'],
@@ -381,27 +400,19 @@ const LandingPage = () => {
       } catch (error) {
         setIsZipValid(false);
         setLocationData({ city: '', state: '' });
+        return
       }
     } else {
       setIsZipValid(false);
       setLocationData({ city: '', state: '' });
+      return
     }
-  };
-
-
-  const handleContinue = () => {
-    setProfile(formData.email)
-    setEmailToSendFirstEmail(formData.email)
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    console.log(isZipValid); 
     
     if (!isZipValid) {
       console.log('Invalid ZIP code, cannot submit form.');
       return;
     }
-
     const ongageData = {
       email: formData.email,
       overwrite: true,
@@ -419,14 +430,41 @@ const LandingPage = () => {
       ]
     };
 
-    const emailData= {
-      FromName:"Petra Job",
-      FromEmail: "info@notifications.petrajob.com",
-      ReplyTo: "info@notifications.petrajob.com",
+    let emailData= {
+      FromName:"Jobs Wish",
+      FromEmail: "infinfo@hi.jobswish.com",
+      ReplyTo: "info@hi.jobswish.com",
       ToEmail:formData.email,
       Subject:"Simple Email Example",
-      HTML:"Hello Relay Send World"
+      HTML:""
     };
+
+    const locationWithSpaces = `${locationData.city} ${locationData.state}`.replace(/ /g, '%20');
+
+    const queryParams = new URLSearchParams({
+        keyword: formData.jobTitle,
+        location: locationWithSpaces,
+        name: formData.name
+    }).toString();
+
+    try {
+        const templateResponse = await fetch(`${API_ENDPOINT_TEMPLATE}?${queryParams}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!templateResponse.ok) {
+            throw new Error('Failed to fetch template');
+        }
+
+        const templateResult = await templateResponse.text();
+        emailData.HTML = templateResult;
+    } catch (error) {
+        console.error('Error fetching template:', error);
+    }
+
 
     try {
       // Call the Ongage API through your server endpoint
@@ -504,8 +542,8 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
 
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
-
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    
     console.log('New User:', ongageData, campaignerData, emailData);
   };
 
@@ -597,9 +635,6 @@ const LandingPage = () => {
                 />
                 <SubmitButton type="submit">Submit</SubmitButton>
                 {!isZipValid && <span style={{ color: 'red' , marginTop:'10px'}}>Invalid ZIP code</span>}
-                {locationData.city && locationData.state && (
-                  <></>
-                )}
               </Form>
             </>
           ) : (
@@ -619,8 +654,10 @@ const LandingPage = () => {
                   value={formData.email}
                   onChange={handleInputEmail}
                   required
+                  invalid={!emailValid}
                 />
                 <SubmitButtonDown type="submit" >Continue</SubmitButtonDown>
+                {!emailValid && <span style={{ color: 'red' , marginTop:'10px'}}>Invalid Emai</span>}
               </Form2>
               
             </>

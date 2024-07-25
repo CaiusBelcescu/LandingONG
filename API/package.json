@@ -19,7 +19,8 @@
     "express-winston": "^4.2.0",
     "nodemon": "^3.1.4",
     "request": "^2.88.2",
-    "winston": "^3.13.0",
+    "winston": "^3.13.1",
     "winston-daily-rotate-file": "^5.0.0"
+    
   }
 }
