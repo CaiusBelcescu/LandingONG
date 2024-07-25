@@ -432,7 +432,7 @@ const LandingPage = () => {
 
     let emailData= {
       FromName:"Jobs Wish",
-      FromEmail: "infinfo@hi.jobswish.com",
+      FromEmail: "info@hi.jobswish.com",
       ReplyTo: "info@hi.jobswish.com",
       ToEmail:formData.email,
       Subject:"Simple Email Example",
@@ -675,3 +675,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
