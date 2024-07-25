@@ -8,15 +8,17 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 
+const API_ONGAGE_URL = 'https://api.ongage.net/167360/api/v2/'
+const API_CAMPAIGNER_URL = 'https://edapi.campaigner.com/v1/';
+const API_DYNAMIC_EMAIL_TEMPLATE_URL = 'https://edapi.campaigner.com/v1/';
+
 dotenv.config({ path: path.join(__dirname, process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local') });
 
 const app = express();
 const server = http.createServer(app);
-
 app.use(cors());
 app.use(express.json());
 
-// Set up winston logger with daily rotation
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -34,7 +36,6 @@ const logger = winston.createLogger({
   ],
 });
 
-// Log HTTP requests
 app.use(expressWinston.logger({
   transports: [
     new DailyRotateFile({
@@ -56,16 +57,15 @@ app.use(expressWinston.logger({
   ignoreRoute: function (req, res) { return false; }
 }));
 
-// Your existing routes
+
 app.post('/api/ongage', async (req, res) => {
   const ongageData = req.body;
   const accountCode = process.env.REACT_APP_ACCOUNTCODE;
   const username = process.env.REACT_APP_USERNAME;
   const password = process.env.REACT_APP_PASSWORD;
-  logger.info(`accountcode: ${accountCode}`);
 
   try {
-    const ongageResponse = await axios.post('https://api.ongage.net/167360/api/v2/contacts/', ongageData, {
+    const ongageResponse = await axios.post(API_ONGAGE_URL + 'contacts', ongageData, {
       headers: {
         'Content-Type': 'application/json',
         'x_account_code': accountCode,
@@ -85,7 +85,7 @@ app.post('/api/campaigner', async (req, res) => {
   const campaignerData = req.body;
   const apiKey = process.env.REACT_APP_APIKEY;
   try {
-    const campaignerResponse = await axios.post('https://edapi.campaigner.com/v1/Subscribers', campaignerData, {
+    const campaignerResponse = await axios.post(API_CAMPAIGNER_URL + 'Subscribers', campaignerData, {
       headers: {
         'Content-Type': 'application/json',
         'ApiKey': apiKey
@@ -99,13 +99,12 @@ app.post('/api/campaigner', async (req, res) => {
   }
 });
 
-app.post('/api/email', async (req, res) => {
+app.post('/api/send_email', async (req, res) => {
   const emailData = req.body;
   const apiKey2 = process.env.REACT_APP_APIKEY2;
-  logger.info(`ApiKey2: ${apiKey2}`);
 
   try {
-    const emailResponse = await axios.post('https://edapi.campaigner.com/v1/RelaySends/10722', emailData, {
+    const emailResponse = await axios.post(API_CAMPAIGNER_URL + 'RelaySends/10722', emailData, {
       headers: {
         'Content-Type': 'application/json',
         'ApiKey': apiKey2
