@@ -460,7 +460,7 @@ const LandingPage = () => {
         }
 
         const templateResult = await templateResponse.text();
-        emailData.HTML = templateResult;
+        emailData.HTML = escape(templateResult);
     } catch (error) {
         console.error('Error fetching template:', error);
     }
