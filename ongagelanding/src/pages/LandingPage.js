@@ -241,8 +241,8 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
-const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+// const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
@@ -460,7 +460,7 @@ const LandingPage = () => {
         }
 
         const templateResult = await templateResponse.text();
-        emailData.HTML = escape(templateResult);
+        emailData.HTML =templateResult;
     } catch (error) {
         console.error('Error fetching template:', error);
     }
@@ -514,7 +514,7 @@ const LandingPage = () => {
       console.log(timeDiff)
 
 
-      if (timeDiff >= 300) {
+      if (timeDiff <= 300) {
 
         // Send the email
         try {
@@ -543,9 +543,9 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
 
-    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
-    console.log('New User:', ongageData, campaignerData, emailData);
+    // console.log('New User:', ongageData, campaignerData, emailData);
   };
 
   
