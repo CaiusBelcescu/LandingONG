@@ -514,7 +514,7 @@ const LandingPage = () => {
       console.log(timeDiff)
 
 
-      if (timeDiff <= 300) {
+      if (timeDiff >= 300) {
 
         // Send the email
         try {
@@ -527,7 +527,8 @@ const LandingPage = () => {
           });
 
           if (!emailResponse.ok) {
-            throw new Error('Failed to send email');
+            console.log(emailResponse)
+            throw new Error('Failed to send email' );
           }
 
           const emailResult = await emailResponse.json();
@@ -542,7 +543,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
 
-   // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     console.log('New User:', ongageData, campaignerData, emailData);
   };
@@ -675,3 +676,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
