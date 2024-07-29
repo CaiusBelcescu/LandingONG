@@ -527,7 +527,7 @@ const LandingPage = () => {
           });
 
           if (!emailResponse.ok) {
-            throw new Error('Failed to send email');
+            throw new Error('Failed to send email'+ emailResponse );
           }
 
           const emailResult = await emailResponse.json();
