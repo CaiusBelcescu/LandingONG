@@ -241,8 +241,8 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
-const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
-// const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
