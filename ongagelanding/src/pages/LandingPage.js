@@ -167,11 +167,17 @@ const SubmitButton = styled.button`
   cursor: pointer;
   width: 100%;
   max-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 
-  @media (max-width: 768px) {
-    max-width: 100%;
+  &:disabled {
+    background-color: #2962ff;
+    cursor: not-allowed;
   }
 `;
+
 
 const GoogleButton = styled.button`
   padding: 0.75rem;
@@ -241,6 +247,20 @@ const SubmitButtonDown = styled.button`
   }
 `;
 
+const Loader = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4caf50; /* Green */
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 2s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 // const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
 const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
@@ -264,6 +284,8 @@ const LandingPage = () => {
   });
   const [locationData, setLocationData] = useState({ city: '', state: '' });
   const [isZipValid, setIsZipValid] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => setUser(tokenResponse),
@@ -386,6 +408,9 @@ const LandingPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setIsLoading(true);
+
     const zip=formData.zipcode
     if (/^\d{5}$/.test(zip)) {
       try {
@@ -399,6 +424,7 @@ const LandingPage = () => {
         }
       } catch (error) {
         setIsZipValid(false);
+        setIsLoading(false);
         setLocationData({ city: '', state: '' });
         return
       }
@@ -542,7 +568,7 @@ const LandingPage = () => {
     } catch (error) {
       console.error('Error creating Campaigner user:', error);
     }
-
+    setIsLoading(false);
     window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     // console.log('New User:', ongageData, campaignerData, emailData);
@@ -634,7 +660,9 @@ const LandingPage = () => {
                   required
                   readOnly
                 />
-                <SubmitButton type="submit">Submit</SubmitButton>
+                <SubmitButton type="submit" disabled={isLoading}>
+                  {isLoading ? <Loader /> : 'Submit'}
+                </SubmitButton>
                 {!isZipValid && <span style={{ color: 'red' , marginTop:'10px'}}>Invalid ZIP code</span>}
               </Form>
             </>
