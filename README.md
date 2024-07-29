@@ -38,14 +38,18 @@ To run the project ```npm start```
 
 
 On the API part an env .env.local file is neded with :
-```REACT_APP_APIKEY=
+```
+REACT_APP_APIKEY=
 REACT_APP_APIKEY2=
 REACT_APP_ACCOUNTCODE=
 REACT_APP_USERNAME=
-REACT_APP_PASSWORD="
+REACT_APP_PASSWORD=
+REACT_APP_TOKEN=
+REACT_APP_TEMPLATE_ID=
 ```
 On the ongagelanding an en .env.local file neded with :
-```REACT_APP_CLIENT_ID=
+```
+REACT_APP_CLIENT_ID=
 REACT_APP_RECAPTCHA_SITE_KEY=
 ```
 
