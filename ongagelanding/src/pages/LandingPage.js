@@ -542,7 +542,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
 
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+   // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     console.log('New User:', ongageData, campaignerData, emailData);
   };
@@ -675,4 +675,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-

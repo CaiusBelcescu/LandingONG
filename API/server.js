@@ -101,7 +101,7 @@ const logger = winston.createLogger({
   app.post('/api/email', async (req, res) => {
     const emailData = req.body;
     const apiKey2 = process.env.REACT_APP_APIKEY2;
-    logger.info(`ApiKey2: ${apiKey2}`);
+    logger.info(emailData);
   
     try {
       const emailResponse = await axios.post('https://edapi.campaigner.com/v1/RelaySends/10722', emailData, {
@@ -114,7 +114,7 @@ const logger = winston.createLogger({
       res.status(200).json(emailResponse.data);
     } catch (error) {
       logger.error('Error sending email:', error);
-      res.status(500).json({ error: 'Failed to send email' });
+      res.status(500).json({ error: error});
     }
   });
 
