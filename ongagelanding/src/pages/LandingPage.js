@@ -514,7 +514,7 @@ const LandingPage = () => {
       console.log(timeDiff)
 
 
-      if (timeDiff <= 300) {
+      if (timeDiff >= 300) {
 
         // Send the email
         try {
@@ -542,7 +542,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
 
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     console.log('New User:', ongageData, campaignerData, emailData);
   };
