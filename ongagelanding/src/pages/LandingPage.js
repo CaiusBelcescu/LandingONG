@@ -416,6 +416,7 @@ const LandingPage = () => {
     if (/^\d{5}$/.test(zip)) {
       try {
         const response = await axios.get(`${API_ENDPOINT_VERIFY_ZIPCODE}${zip}`);
+        console.log(response.data);
         if (response.data) {
           setLocationData({
             city: response.data.places[0]['place name'],
@@ -468,7 +469,7 @@ const LandingPage = () => {
       HTML:""
     };
 
-    let locationWithSpaces = locationData.zip;
+    let locationWithSpaces = zip;
     if (locationData.city !== '' && locationData.state !== '')
     {
        locationWithSpaces = `${locationData.city} ${locationData.state}`.replace(/ /g, '%20');
