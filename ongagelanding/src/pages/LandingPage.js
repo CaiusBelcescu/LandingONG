@@ -412,6 +412,7 @@ const LandingPage = () => {
     setIsLoading(true);
 
     const zip=formData.zipcode
+    console.log(zip)
     if (/^\d{5}$/.test(zip)) {
       try {
         const response = await axios.get(`${API_ENDPOINT_VERIFY_ZIPCODE}${zip}`);
@@ -430,6 +431,7 @@ const LandingPage = () => {
       }
     } else {
       setIsZipValid(false);
+      setIsLoading(false)
       setLocationData({ city: '', state: '' });
       return
     }
@@ -437,6 +439,7 @@ const LandingPage = () => {
     
     if (!isZipValid) {
       console.log('Invalid ZIP code, cannot submit form.');
+      setIsLoading(false)
       return;
     }
     const ongageData = {
@@ -648,7 +651,7 @@ const LandingPage = () => {
                   value={formData.zipcode}
                   onChange={handleInputChange}
                   required
-                  invalid={!isZipValid}
+                  invalid={isZipValid ? undefined: "true"}
                 />
                 
                 <Input
@@ -683,7 +686,7 @@ const LandingPage = () => {
                   value={formData.email}
                   onChange={handleInputEmail}
                   required
-                  invalid={!emailValid}
+                  invalid={emailValid ? undefined: "true"}
                 />
                 <SubmitButtonDown type="submit" >Continue</SubmitButtonDown>
                 {!emailValid && <span style={{ color: 'red' , marginTop:'10px'}}>Invalid Emai</span>}
