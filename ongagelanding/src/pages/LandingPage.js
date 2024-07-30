@@ -543,7 +543,7 @@ const LandingPage = () => {
       console.log(timeDiff)
 
 
-      if (timeDiff <= 300) {
+      // if (timeDiff <= 300) {
 
         // Send the email
         try {
@@ -565,14 +565,14 @@ const LandingPage = () => {
         } catch (error) {
           console.error('Error sending email:', error);
         }
-      } else {
-        console.log('User not created within the last minute, email not sent');
-      }
+      // } else {
+      //   console.log('User not created within the last minute, email not sent');
+      // }
     } catch (error) {
       console.error('Error creating Campaigner user:', error);
     }
     setIsLoading(false);
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     // console.log('New User:', ongageData, campaignerData, emailData);
   };
