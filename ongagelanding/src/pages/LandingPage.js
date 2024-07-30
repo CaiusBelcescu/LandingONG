@@ -468,7 +468,11 @@ const LandingPage = () => {
       HTML:""
     };
 
-    const locationWithSpaces = `${locationData.city} ${locationData.state}`.replace(/ /g, '%20');
+    let locationWithSpaces = locationData.zip;
+    if (locationData.city !== '' && locationData.state !== '')
+    {
+       locationWithSpaces = `${locationData.city} ${locationData.state}`.replace(/ /g, '%20');
+    }
 
     const queryParams = new URLSearchParams({
         keyword: formData.jobTitle,
