@@ -424,6 +424,7 @@ const LandingPage = () => {
           });
           setIsZipValid(true);
           console.log(locationData.city);
+          console.log(locationData.state);
         }
       } catch (error) {
         setIsZipValid(false);
