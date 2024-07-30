@@ -477,6 +477,7 @@ const LandingPage = () => {
     }).toString();
 
     try {
+      console.log(queryParams)
         const templateResponse = await fetch(`${API_ENDPOINT_TEMPLATE}?${queryParams}`, {
             method: 'GET',
             headers: {
