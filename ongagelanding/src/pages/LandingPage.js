@@ -423,6 +423,7 @@ const LandingPage = () => {
             state: response.data.places[0]['state abbreviation']
           });
           setIsZipValid(true);
+          console.log(locationData.city);
         }
       } catch (error) {
         setIsZipValid(false);
