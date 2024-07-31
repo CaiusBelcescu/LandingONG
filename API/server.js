@@ -125,18 +125,22 @@ const logger = winston.createLogger({
 
     if (!keyword || !location || !name || !token || !template_id) {
         logger.warn('Missing required query parameters');
+        console.log('Missing required query parameters')
         return res.status(400).json({ error: 'Missing required query parameters' });
     }
 
     const url = `https://parser.careerhotshot.com/syndication/email/create?token=${token}&template_id=${template_id}&keyword=${keyword}&location=${location}&jpp=5&from=email&first_name=${name}`;
+    console.log(`Constructed URL: ${url}`)
     logger.info(`Constructed URL: ${url}`);
 
     try {
         const response = await axios.get(url);
         logger.info('Template fetched successfully');
+        console.log('Template fetched successfully')
         res.status(200).send(response.data);
     } catch (error) {
         logger.error('Error fetching template:', error);
+        console.log('Error fetching template:', error);
         res.status(500).json({ error: 'Failed to fetch template' });
     }
 });

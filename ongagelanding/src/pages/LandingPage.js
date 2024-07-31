@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import image from '../props/AmericanPicture1.webp'
+// import image from '../props/AmericanPicture1.webp'
 
 const Container = styled.div`
   display: flex;
@@ -18,23 +18,6 @@ const Container = styled.div`
     height: auto;
     padding-top: 80px;
     margin-top: 0;
-  }
-`;
-const RequiredAsterisk = styled.span`
-  color: red;
-  margin-left: 0.25rem;
-`;
-const Label = styled.label`
-  display: block;
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-  width: 100%;
-  max-width: 300px;
-  text-align: left;
-
-  @media (max-width: 768px) {
-    max-width: 100%;
   }
 `;
 
@@ -261,8 +244,8 @@ const Loader = styled.div`
   }
 `;
 
-// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
-const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+// const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
@@ -405,39 +388,32 @@ const LandingPage = () => {
     setProfile(formData.email);
     setEmailToSendFirstEmail(formData.email);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     setIsLoading(true);
-
+    let responseLocation
     const zip=formData.zipcode
     console.log(zip)
     if (/^\d{5}$/.test(zip)) {
       try {
         const response = await axios.get(`${API_ENDPOINT_VERIFY_ZIPCODE}${zip}`);
-        console.log(response.data);
+        responseLocation=response
+        console.log(responseLocation)
+        console.log(response)
         if (response.data) {
           setLocationData({
             city: response.data.places[0]['place name'],
             state: response.data.places[0]['state abbreviation']
           });
           setIsZipValid(true);
-          console.log(locationData.city);
-          console.log(locationData.state);
+
         }
       } catch (error) {
         setIsZipValid(false);
-        setIsLoading(false);
         setLocationData({ city: '', state: '' });
-        return
       }
-    } else {
-      setIsZipValid(false);
-      setIsLoading(false)
-      setLocationData({ city: '', state: '' });
-      return
-    }
+    };
     console.log(isZipValid); 
     
     if (!isZipValid) {
@@ -471,10 +447,9 @@ const LandingPage = () => {
       HTML:""
     };
 
-    let locationWithSpaces = zip;
-    if (locationData.city !== '' && locationData.state !== '')
-    {
-       locationWithSpaces = `${locationData.city} ${locationData.state}`.replace(/ /g, '%20');
+    let locationWithSpaces = `${responseLocation.data.places[0]['place name']},${responseLocation.data.places[0]['state abbreviation']}`.replace(/ /g, '%');
+    if(!responseLocation.data.places[0]['place name'] || !responseLocation.data.places[0]['state abbreviation']){
+      locationWithSpaces=formData.zipcode
     }
 
     const queryParams = new URLSearchParams({
@@ -580,23 +555,12 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
     setIsLoading(false);
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
-    // console.log('New User:', ongageData, campaignerData, emailData);
+    console.log('New User:', ongageData, campaignerData, emailData);
   };
 
   
-
-  const logOut = () => {
-    googleLogout();
-    setProfile(null);
-    setFormData({
-      name: '',
-      jobTitle: '',
-      zipcode: '',
-      email: ''
-    });
-  };
   useEffect(() => {
     const loadRecaptcha = async () => {
       try {
