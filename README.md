@@ -55,3 +55,10 @@ REACT_APP_RECAPTCHA_SITE_KEY=
 
 To install all dependencies run ```npm install```
 Run API with ```npm run dev```
+
+
+
+To run with docker there are three steps:
+1. Pull the latest version ```git pull```
+2. Create an image with docker ```docker build -t landingong-app .```
+3. Run docker ( this command gets the logs form docker logs and -it lets the user kill it while insight ) ```docker run -v $PWD/logs:/app/API/logs -it -p 8080:8080 -p 5000:5000 landingong-app```
