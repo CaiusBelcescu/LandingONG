@@ -392,31 +392,36 @@ const LandingPage = () => {
     e.preventDefault();
 
     setIsLoading(true);
-    let responseLocation
+    let responseLocation= null
     const zip=formData.zipcode
     console.log(zip)
     if (/^\d{5}$/.test(zip)) {
       try {
         const response = await axios.get(`${API_ENDPOINT_VERIFY_ZIPCODE}${zip}`);
         responseLocation=response
-        console.log(responseLocation)
-        console.log(response)
         if (response.data) {
-          setLocationData({
+          await setLocationData({
             city: response.data.places[0]['place name'],
             state: response.data.places[0]['state abbreviation']
           });
-          setIsZipValid(true);
-
+          console.log(locationData)
+          await setIsZipValid(true);
         }
       } catch (error) {
-        setIsZipValid(false);
+        await setIsZipValid(false);
+        setIsLoading(false);
         setLocationData({ city: '', state: '' });
+        return
       }
-    };
+    } else {
+      await setIsZipValid(false);
+      setIsLoading(false)
+      setLocationData({ city: '', state: '' });
+      return
+    }
     console.log(isZipValid); 
-    
-    if (!isZipValid) {
+    console.log(responseLocation)
+    if (responseLocation===null) {
       console.log('Invalid ZIP code, cannot submit form.');
       setIsLoading(false)
       return;
@@ -447,8 +452,10 @@ const LandingPage = () => {
       HTML:""
     };
 
-    let locationWithSpaces = `${responseLocation.data.places[0]['place name']},${responseLocation.data.places[0]['state abbreviation']}`.replace(/ /g, '%');
-    if(!responseLocation.data.places[0]['place name'] || !responseLocation.data.places[0]['state abbreviation']){
+    let locationWithSpaces 
+    if(responseLocation){
+      locationWithSpaces = `${responseLocation.data.places[0]['place name']},${responseLocation.data.places[0]['state abbreviation']}`.replace(/ /g, '%');
+    }else{
       locationWithSpaces=formData.zipcode
     }
 
