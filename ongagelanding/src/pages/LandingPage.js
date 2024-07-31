@@ -461,11 +461,10 @@ const LandingPage = () => {
     {
       const state = responseLocation.data.places[0]['state abbreviation'];
       const city = responseLocation.data.places[0]['place name'];
-      // Update ongageData
+
       ongageData.fields.state = state;
       ongageData.fields.city = city;
 
-      // Update campaignerData
       campaignerData.CustomFields.forEach(field => {
         if (field.FieldName === 'state') {
           field.Value = state;
@@ -585,7 +584,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
     setIsLoading(false);
-    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     console.log('New User:', ongageData, campaignerData, emailData);
   };
