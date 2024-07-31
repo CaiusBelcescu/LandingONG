@@ -244,8 +244,8 @@ const Loader = styled.div`
   }
 `;
 
-// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
-const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
+const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+// const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
@@ -426,20 +426,26 @@ const LandingPage = () => {
       setIsLoading(false)
       return;
     }
-    const ongageData = {
+
+
+    let ongageData = {
       email: formData.email,
       overwrite: true,
       fields: {
         first_name: formData.name,
         zip: formData.zipcode,
-        keyword: formData.jobTitle
+        keyword: formData.jobTitle,
+        state: '',
+        city: ''
       }
     };
-
-    const campaignerData = {
+    let campaignerData = {
       EmailAddress: formData.email,
       CustomFields: [
-        { FieldName: 'keyword', Value: formData.jobTitle }
+        { FieldName: 'keyword', Value: formData.jobTitle },
+        { FieldName: 'city', Value: '' },
+        { FieldName: 'state', Value: '' },
+        { FieldName: 'zip', Value: zip }
       ]
     };
 
@@ -451,6 +457,23 @@ const LandingPage = () => {
       Subject:"Welcome to Jobs Wish",
       HTML:""
     };
+    if (responseLocation!==null)
+    {
+      const state = responseLocation.data.places[0]['state abbreviation'];
+      const city = responseLocation.data.places[0]['place name'];
+      // Update ongageData
+      ongageData.fields.state = state;
+      ongageData.fields.city = city;
+
+      // Update campaignerData
+      campaignerData.CustomFields.forEach(field => {
+        if (field.FieldName === 'state') {
+          field.Value = state;
+        } else if (field.FieldName === 'city') {
+          field.Value = city;
+        }
+      });
+    }
 
     let locationWithSpaces 
     if(responseLocation){
