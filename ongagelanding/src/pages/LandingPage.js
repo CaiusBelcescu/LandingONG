@@ -244,7 +244,7 @@ const Loader = styled.div`
   }
 `;
 
-//const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
+// const API_ENDPOINT_ROOT_URL = 'http://localhost:5000/api/';
 const API_ENDPOINT_ROOT_URL = 'https://hi.jobswish.com/api/';
 const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
@@ -627,7 +627,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
     setIsLoading(false);
-    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     console.log('New User:', ongageData, campaignerData, emailData);
   };
