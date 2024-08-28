@@ -430,7 +430,7 @@ const LandingPage = () => {
       }
     };
 
-    loadRecaptcha();
+    await loadRecaptcha();
     try {
       console.log(recaptchaToken)
       console.log(rechToken)
