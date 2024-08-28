@@ -412,8 +412,28 @@ const LandingPage = () => {
     e.preventDefault();
 
     setIsLoading(true);
+    let rechToken=null
+    const loadRecaptcha = async () => {
+      try {
+        const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+        if (siteKey && window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(siteKey, { action: 'submit' }).then((token) => {
+              setRecaptchaToken(token);
+              
+            });
+          });
+        }
+        console.log("ok chapcha")
+      } catch (error) {
+        console.error('Error loading reCAPTCHA:', error);
+      }
+    };
 
+    loadRecaptcha();
     try {
+      console.log(recaptchaToken)
+      console.log(rechToken)
       const recaptchaResponse = await fetch(`${API_ENDPOINT_VERIFY_RECAPTCHA}`, {
           method: 'POST',
           headers: {

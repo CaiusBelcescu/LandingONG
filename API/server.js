@@ -149,7 +149,7 @@ app.post('/api/verify-recaptcha', async (req, res) => {
   const secretKey = process.env.REACT_APP_RECAPTCHA_SECRET_KEY;
   const { gRecaptchaToken } = req.body;
 
-  const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
+  let formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
 
   try {
       const response = await axios.post(
@@ -161,7 +161,7 @@ app.post('/api/verify-recaptcha', async (req, res) => {
               }
           }
       );
-
+      console.log(response)
       if (response.data?.success && response.data?.score > 0.5) {
           logger.info('reCAPTCHA verification successful');
           res.json({
