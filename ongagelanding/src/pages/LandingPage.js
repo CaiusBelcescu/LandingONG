@@ -309,7 +309,6 @@ const LandingPage = () => {
             });
           });
         }
-        console.log("ok chapcha")
       } catch (error) {
         console.error('Error loading reCAPTCHA:', error);
       }
@@ -344,7 +343,7 @@ const LandingPage = () => {
         }
 
         const ongageResult = await ongageResponse.json();
-        console.log('Ongage User created:', ongageResult);
+        // console.log('Ongage User created:', ongageResult);
       } catch (error) {
         console.error('Error creating user:', error);
       }
@@ -363,7 +362,7 @@ const LandingPage = () => {
         }
 
         const campaignerResult = await campaignerResponse.json();
-        console.log('Campaigner User created:', campaignerResult);
+        // console.log('Campaigner User created:', campaignerResult);
       } catch (error) {
         console.log('Error creating Campaigner user:', error);
       }
@@ -396,7 +395,7 @@ const LandingPage = () => {
     e.preventDefault();
     
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    console.log(formData.email)
+    // console.log(formData.email)
     if (!emailPattern.test(formData.email)) {
       console.log('Invalid email format');
       setEmailValid(false)
@@ -430,8 +429,6 @@ const LandingPage = () => {
 
     loadRecaptcha();
     try {
-      console.log(recaptchaToken)
-      console.log(rechToken)
       const recaptchaResponse = await fetch(`${API_ENDPOINT_VERIFY_RECAPTCHA}`, {
           method: 'POST',
           headers: {
@@ -441,7 +438,6 @@ const LandingPage = () => {
       });
 
       const recaptchaResult = await recaptchaResponse.json();
-      console.log(recaptchaResult)
       if (!recaptchaResult.success) {
           console.error('reCAPTCHA verification failed.');
           setIsLoading(false);
@@ -455,7 +451,6 @@ const LandingPage = () => {
 
     let responseLocation= null
     const zip=formData.zipcode
-    console.log(zip)
     if (/^\d{5}$/.test(zip)) {
       try {
         const response = await axios.get(`${API_ENDPOINT_VERIFY_ZIPCODE}${zip}`);
@@ -465,7 +460,6 @@ const LandingPage = () => {
             city: response.data.places[0]['place name'],
             state: response.data.places[0]['state abbreviation']
           });
-          console.log(locationData)
           await setIsZipValid(true);
         }
       } catch (error) {
@@ -480,8 +474,6 @@ const LandingPage = () => {
       setLocationData({ city: '', state: '' });
       return
     }
-    console.log(isZipValid); 
-    console.log(responseLocation)
     if (responseLocation===null) {
       console.log('Invalid ZIP code, cannot submit form.');
       setIsLoading(false)
@@ -549,7 +541,6 @@ const LandingPage = () => {
     }).toString();
 
     try {
-      console.log(queryParams)
         const templateResponse = await fetch(`${API_ENDPOINT_TEMPLATE}?${queryParams}`, {
             method: 'GET',
             headers: {
@@ -583,7 +574,6 @@ const LandingPage = () => {
       }
 
       const ongageResult = await ongageResponse.json();
-      console.log('Ongage User created:', ongageResult);
     } catch (error) {
       console.error('Error creating user:', error);
     }
@@ -603,17 +593,13 @@ const LandingPage = () => {
       }
 
       const campaignerResult = await campaignerResponse.json();
-      console.log('Campaigner User created:', campaignerResult);
 
       
       const createdAt = new Date(campaignerResult.Created);
       createdAt.setHours(createdAt.getHours() + 3);
-      console.log('Adjusted Created At:', createdAt);
 
       const now = new Date();
-      console.log(now)
       const timeDiff = (now - createdAt) / 1000; // time difference in seconds
-      console.log(timeDiff)
 
 
       // if (timeDiff <= 300) {
@@ -629,12 +615,10 @@ const LandingPage = () => {
           });
 
           if (!emailResponse.ok) {
-            console.log(emailResponse)
             throw new Error('Failed to send email' );
           }
 
           const emailResult = await emailResponse.json();
-          console.log('Email sent:', emailResult);
         } catch (error) {
           console.error('Error sending email:', error);
         }
@@ -647,7 +631,7 @@ const LandingPage = () => {
     setIsLoading(false);
     window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
-    console.log('New User:', ongageData, campaignerData, emailData);
+    // console.log('New User:', ongageData, campaignerData, emailData);
   };
 
   
