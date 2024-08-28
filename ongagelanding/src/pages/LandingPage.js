@@ -297,6 +297,7 @@ const LandingPage = () => {
         .catch((err) => console.log(err));
     }
   }, [user]);
+
   useEffect(() => {
     const loadRecaptcha = async () => {
       try {
@@ -315,9 +316,6 @@ const LandingPage = () => {
     };
 
     loadRecaptcha();
-  }, []);
-
-  useEffect(() => {
     const sendData = async () => {
       if (!emailToSendFirstEmail) return;
 
@@ -430,7 +428,7 @@ const LandingPage = () => {
       }
     };
 
-    await loadRecaptcha();
+    loadRecaptcha();
     try {
       console.log(recaptchaToken)
       console.log(rechToken)
