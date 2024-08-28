@@ -145,6 +145,38 @@ const logger = winston.createLogger({
     }
 });
 
+app.post('/api/verify-recaptcha', async (req, res) => {
+  const secretKey = process.env.REACT_APP_RECAPTCHA_SECRET_KEY;
+  const { gRecaptchaToken } = req.body;
+
+  const formData = `secret=${secretKey}&response=${gRecaptchaToken}`;
+
+  try {
+      const response = await axios.post(
+          'https://www.google.com/recaptcha/api/siteverify',
+          formData,
+          {
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+              }
+          }
+      );
+
+      if (response.data?.success && response.data?.score > 0.5) {
+          logger.info('reCAPTCHA verification successful');
+          res.json({
+              success: true,
+              score: response.data.score
+          });
+      } else {
+          logger.warn('reCAPTCHA verification failed');
+          res.json({ success: false });
+      }
+  } catch (error) {
+      logger.error('Error verifying reCAPTCHA:', error);
+      res.status(500).json({ success: false });
+  }
+});
 
 
 const PORT = process.env.PORT || 5000;

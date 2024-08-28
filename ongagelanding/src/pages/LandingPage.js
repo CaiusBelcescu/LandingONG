@@ -250,6 +250,7 @@ const API_ENDPOINT_ONGAGE_URL = API_ENDPOINT_ROOT_URL + 'ongage/';
 const API_ENDPOINT_CAMPAIGNER_URL = API_ENDPOINT_ROOT_URL + 'campaigner/';
 const API_ENDPOINT_EMAIL_URL = API_ENDPOINT_ROOT_URL + 'email/';
 const API_ENDPOINT_TEMPLATE = API_ENDPOINT_ROOT_URL + 'template/';
+const API_ENDPOINT_VERIFY_RECAPTCHA = API_ENDPOINT_ROOT_URL+'verify-recaptcha';
 const API_ENDPOINT_VERIFY_ZIPCODE= 'https://api.zippopotam.us/us/';
 const API_ENDPOINT_GOOGLE_AUTH='https://www.googleapis.com/oauth2/v1/userinfo?access_token='
 
@@ -296,6 +297,25 @@ const LandingPage = () => {
         .catch((err) => console.log(err));
     }
   }, [user]);
+  useEffect(() => {
+    const loadRecaptcha = async () => {
+      try {
+        const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+        if (siteKey && window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(siteKey, { action: 'submit' }).then((token) => {
+              setRecaptchaToken(token);
+            });
+          });
+        }
+        console.log("ok chapcha")
+      } catch (error) {
+        console.error('Error loading reCAPTCHA:', error);
+      }
+    };
+
+    loadRecaptcha();
+  }, []);
 
   useEffect(() => {
     const sendData = async () => {
@@ -392,6 +412,29 @@ const LandingPage = () => {
     e.preventDefault();
 
     setIsLoading(true);
+
+    try {
+      const recaptchaResponse = await fetch(`${API_ENDPOINT_VERIFY_RECAPTCHA}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ gRecaptchaToken: recaptchaToken })
+      });
+
+      const recaptchaResult = await recaptchaResponse.json();
+      console.log(recaptchaResult)
+      if (!recaptchaResult.success) {
+          console.error('reCAPTCHA verification failed.');
+          setIsLoading(false);
+          return;
+      }
+  } catch (error) {
+      console.error('Error verifying reCAPTCHA:', error);
+      setIsLoading(false);
+      return;
+  }
+
     let responseLocation= null
     const zip=formData.zipcode
     console.log(zip)
@@ -584,7 +627,7 @@ const LandingPage = () => {
       console.error('Error creating Campaigner user:', error);
     }
     setIsLoading(false);
-    window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
+    // window.location.href = `https://jobswish.com/search?q=${formData.jobTitle}&l=${formData.zipcode}`;
     
     console.log('New User:', ongageData, campaignerData, emailData);
   };
